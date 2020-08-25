@@ -1,0 +1,58 @@
+@import "../../config/variable";
+
+.p-index {
+  display: flex;
+  margin: 0 auto;
+  justify-content: space-between;
+  min-height: 700px;
+  width: 1200px;
+  padding: $space_3l * 2 0 0;
+  &__sidebar {
+    background: #fff;
+    width: 20%;
+    height: 225px;
+  }
+  &__search {
+    //padding: $space_l;
+    //border: 1px #a0a0a0 solid;
+    & .p-select-box {
+      margin-bottom: 30px;
+      border: 1px solid $color_green;
+      color: $color_green;
+    }
+    & .p-select-heading {
+      padding: 10px;
+      &:hover {
+        background: $color_green;
+        color: #fff;
+      }
+    }
+    & .p-select-list {
+      display: none;
+    }
+    & .p-select-option {
+      padding: 10px;
+      &:hover {
+        background: $color_green;
+        color: #fff;
+      }
+    }
+  }
+  &__main {
+    width: 77%;
+  }
+  &__result {
+    display: flex;
+    justify-content: space-between;
+    background: $color_green;
+    color: #fff;
+    padding: $space_m;
+  }
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -$space_l;
+    width: 100%;
+    padding: $space_3l 0px $space_3l $space_l;
+  }
+}

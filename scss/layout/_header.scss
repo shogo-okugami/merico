@@ -1,0 +1,48 @@
+@import "../config/variable";
+
+// header //
+.l-header {
+  color: #fff;
+  padding: $space_3l $space_3l * 2;
+  border-bottom: 1px #eee solid;
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-sizing: border-box;
+    width: 1200px;
+    margin: 0 auto;
+    & form {
+      position: relative;
+      width: 45%;
+      & .c-form__input {
+        border: 1px #a0a0a0 solid;
+      }
+      & .c-btn--submit {
+        position: absolute;
+        width: 10%;
+        height: 100%;
+        top: 0;
+        right: 0;
+      }
+    }
+  }
+  &__title {
+    text-align: center;
+    letter-spacing: 0.15rem;
+    font-size: 40px;
+    // width: $site-width;
+    position: relative;
+    & a {
+      color: $color_green;
+    }
+  }
+  &.is-fixed {
+    background: #fff;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 2;
+  }
+}

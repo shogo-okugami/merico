@@ -1,0 +1,29 @@
+.c-modal {
+  position: fixed;
+  background: #fff;
+  width: 40%;
+  height: 200px;
+  display: none;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  z-index: 3;
+  &.is-show {
+    display: flex;
+    align-items: center;
+    text-align: center;
+  }
+  &__inner{
+    padding: $space_l;
+    margin: 0 auto;
+  }
+  &__text{
+    padding: $space_l;
+    width: 100%;
+    margin-bottom: $space_xl;
+  }
+  &__btn {
+    display: flex;
+    justify-content: space-between;
+  }
+}

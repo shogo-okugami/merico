@@ -1,0 +1,39 @@
+.c-form {
+  margin: 0 auto;
+  width: 40%;
+  background: #fff;
+  padding: 20px 30px 40px;
+  &__label {
+    &.is-error {
+      & .c-form__input {
+        background: #f7dcd9;
+      }
+    }
+  }
+  &__text {
+    margin-bottom: 15px;
+    display: flex;
+    //align-items: baseline;
+  }
+  &__input {
+    display: block;
+    border: 1px solid $color_green;
+    border-radius: 5px;
+    padding: $space_m;
+    width: 100%;
+    &--hidden {
+      display: none;
+    }
+  }
+  &__item {
+    padding: 35px 15px 0;
+    font-size: 18px;
+  }
+  &__msg {
+    color: #e45252;
+    padding: 0 $space_l;
+  }
+  &__counter {
+    text-align: right;
+  }
+}

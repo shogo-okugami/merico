@@ -1,0 +1,144 @@
+.p-resist {
+  width: 980px;
+  padding: $space_3l * 2 0;
+  margin: 0 auto;
+  & .c-form {
+    width: 70%;
+    &__heading {
+      position: relative;
+      color: #777;
+      border: 1px #777 solid;
+      display: block;
+      padding: 5px;
+      width: 70%;
+      margin-bottom: 20px 0px;
+      margin: 20px 0;
+      & .triangle {
+        display: block;
+        width: 0;
+        height: 0;
+        border-style: solid;
+        border-width: 10px 5px 0 5px;
+        border-color: #777 transparent transparent transparent;
+        position: absolute;
+        top: 35%;
+        left: 82%;
+        &--large {
+          width: 0;
+          height: 0;
+          border-style: solid;
+          border-width: 15px 7.5px 0 7.5px;
+          border-color: #777 transparent transparent transparent;
+          top: 30%;
+          left: 92%;
+          position: absolute;
+        }
+      }
+    }
+    &__images {
+      display: flex;
+      justify-content: space-around;
+      // padding: $space_3l 0;
+      margin-bottom: $space_3l;
+      & .c-form__item {
+        width: 30%;
+        padding: $space_l 0;
+        position: relative;
+      }
+
+      & .c-form__text {
+        height: 100px;
+        margin: 0;
+      }
+      & img {
+        height: 180px;
+        //position: absolute;
+        top: 25%;
+        left: 0;
+      }
+      & .c-form__msg {
+        padding: 0;
+      }
+      & .img-sheet {
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        top: 0%;
+        left: 0;
+        z-index: 1;
+      }
+    }
+    &__item {
+      position: relative;
+    }
+    &__file {
+      display: block;
+      opacity: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+    }
+    &__delete {
+      display: none;
+      opacity: 0.6;
+      position: absolute;
+      width: 100%;
+      width: 30%;
+      left: 115%;
+      top: 25%;
+      //height: 40px;
+      //z-index: 2;
+      &--profile {
+        display: none;
+        opacity: 0.6;
+        position: absolute;
+        width: 100%;
+        width: 30%;
+        top: 25%;
+        left: 105%;
+        & input {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          opacity: 0;
+        }
+      }
+      & input {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+      }
+    }
+    &__prev {
+      position: relative;
+    }
+    & .p-select-box {
+      border: 1px solid $color_green;
+      color: $color_green;
+    }
+    & .p-select-heading {
+      padding: 10px;
+      &:hover {
+        background: $color_green;
+        color: #fff;
+      }
+    }
+    & .p-select-list {
+      display: none;
+    }
+    & .p-select-option {
+      padding: 10px;
+      &:hover {
+        background: $color_green;
+        color: #fff;
+      }
+    }
+  }
+}

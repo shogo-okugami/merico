@@ -1,0 +1,17 @@
+@mixin badge {
+  padding: 5px;
+  color: #fff;
+}
+.c-badge {
+  &--primary {
+    @include badge;
+    background: $color_green;
+  }
+  &--required {
+    @include badge;
+    background: #e66b6b;
+    padding: 0 10px;
+    border-radius: 5px;
+    margin-left: $space_xl;
+  }
+}

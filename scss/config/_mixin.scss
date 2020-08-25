@@ -1,0 +1,11 @@
+@import "variable";
+
+@mixin btn {
+    padding: $space_s $space_m;
+    background: #fff;
+    border-radius: 5px;
+    display: block;
+    text-align: center;
+    transition: all .5s;
+    cursor: pointer;
+}

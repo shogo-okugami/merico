@@ -1,0 +1,11 @@
+.l-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: $color_green;
+  color: #fff;
+  height: 80px;
+  & p {
+    text-align: center;
+  }
+}

@@ -1,0 +1,28 @@
+.p-bord {
+  width: $site-width;
+  margin: 0 auto;
+  display: flex;
+  padding: $space_3l*2 0;
+  & .p-product{
+    width: 60%;
+    padding: 0;
+    margin: 0;
+    &__img {
+      width: 400px;
+      margin: 0 auto;
+      & img {
+        width: 400px;
+        height: 400px;
+      }
+    }
+    &__info {
+      margin-top: $space_xxl;
+
+    }
+    & form{
+      width: 400px;
+      margin: 0 auto;
+      padding-top: $space_xl;
+    }
+  }
+}

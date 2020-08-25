@@ -1,0 +1,21 @@
+.c-pagination {
+  margin-bottom: $space_xxl * 2;
+  &__list {
+    display: flex;
+    justify-content: space-evenly;
+    margin: 0 auto;
+    width: 50%;
+  }
+  &__link {
+    display: block;
+    color: #444;
+    background: #f5f5f5;
+    width: 30px;
+    padding: 5px;
+    text-align: center;
+    &.is-active {
+      color: #fff;
+      background: $color_green;
+    }
+  }
+}

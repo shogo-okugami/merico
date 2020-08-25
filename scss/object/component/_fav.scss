@@ -1,0 +1,14 @@
+//お気に入りアイコン
+.fa{
+    font-size: 30px;
+    display: block;
+  }
+  .fav{
+    cursor: pointer;
+    transition: all .2s;
+    color: #ddd;
+    &.is-active{
+        color: #e7a0c5;
+        transition: all .2s;
+        }
+  }
