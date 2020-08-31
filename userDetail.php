@@ -41,7 +41,7 @@ require('head.php');
       <div class="c-container">
         <div class="p-profile">
           <div class="p-profile__img">
-            <img src="<?php echo showProfImg(sanitize($userInfo['id'])); ?>" alt="プロフィール画像">
+            <img src="<?php echo showProfImg($userInfo['pic']); ?>" alt="プロフィール画像">
           </div>
           <div class="p-profile__name">
             <?php if (!empty($userInfo['name'])) echo sanitize($userInfo['name']); ?>

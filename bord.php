@@ -53,9 +53,12 @@ debug('取得した相手のユーザーID：' . $partnerUserId);
 // DBから取引相手のユーザー情報を取得
 if (isset($partnerUserId)) {
   $partnerUserInfo = getUser($partnerUserId);
+  $partnerImg = $partnerUserInfo['pic'];
 }
 // DBから自分のユーザー情報を取得
 $myUserInfo = getUser($_SESSION['user_id']);
+$myImg = $myUserInfo['pic'];
+
 debug('取得したユーザデータ：' . print_r($partnerUserInfo, true));
 // 自分のユーザー情報が取れたかチェック
 if (empty($myUserInfo)) {
@@ -185,7 +188,7 @@ require('head.php');
           ?>
                 <div class="p-msg__comment--left js-message">
                   <div class="p-msg__comment__img">
-                    <img src="<?php echo showProfImg($partnerUserId); ?>">
+                    <img src="<?php echo showProfImg($partnerImg); ?>">
                   </div>
                   <div class="p-msg__text">
                     <span class="p-msg__triangle"></span>
@@ -200,7 +203,7 @@ require('head.php');
                     <?php echo nl2br(sanitize($val['msg'])); ?>
                   </div>
                   <div class="p-msg__comment__img">
-                    <img src="<?php echo showProfImg($myUserInfo['id']); ?>">
+                    <img src="<?php echo showProfImg($myImg); ?>">
                   </div>
                 </div>
 
@@ -223,8 +226,8 @@ require('head.php');
             <input type="hidden" name="to_user_id" value="<?php echo $partnerUserId; ?>" class="js-to-id">
             <input type="hidden" name="from_user_id" value="<?php echo $_SESSION['user_id']; ?>" class="js-from-id">
             <input type="hidden" name="last_id" value="<?php echo isset($lastViewData) ? $lastViewData['m_id']: ''; ?>" class="js-last-id">
-            <input type="hidden" name="img" value="<?php echo showProfImg($myUserInfo['id']); ?>" class="js-user-img">
-            <input type="hidden" name="partner-img" value="<?php echo showProfImg($partnerUserInfo['id']); ?>" class="js-partner-img">
+            <input type="hidden" name="img" value="<?php echo showProfImg($myImg); ?>" class="js-user-img">
+            <input type="hidden" name="partner-img" value="<?php echo showProfImg($partnerImg); ?>" class="js-partner-img">
             <textarea name="msg" cols="30" rows="3" class="js-count js-message-input"></textarea>
             <p class="c-form__counter u-mb35"><span class="js-count-view">0</span>/255文字</p>
             <input type="submit" name="submit" value="送信" class="c-form__input c-btn--submit js-message-submit">

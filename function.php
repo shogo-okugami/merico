@@ -975,15 +975,14 @@ function pagination($currentPageNum, $totalPageNum, $param = '', $pageColNum = 5
 /**
  * プロフィール画像表示関数
  * 
- * @param int $user_id
+ * @param string $path
  * 
  * @return string
  */
-function showProfImg(int $user_id)
+function showProfImg(string $path)
 {
-  $userInfo = getuser($user_id);
-  if (!empty($userInfo['pic'])) {
-    return sanitize($userInfo['pic']);
+  if (!empty($path)) {
+    return sanitize($path);
   } else {
     //画像を登録してない場合初期画像を表示
     return "img/sample-profile.png";

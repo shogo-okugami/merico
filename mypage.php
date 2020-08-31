@@ -72,7 +72,7 @@ require('head.php');
         <div class="p-mypage__main">
           <div class="p-mypage__contents">
             <div class="p-mypage__img">
-              <img src="<?php echo showProfImg(sanitize($user_id)); ?>" alt="プロフィール画像">
+              <img src="<?php echo showProfImg($userInfo['pic']); ?>" alt="プロフィール画像">
             </div>
             <div class="p-mypage__name">
               <?php if (!empty($userInfo['name'])) echo $userInfo['name']; ?>
