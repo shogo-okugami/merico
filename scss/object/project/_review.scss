@@ -1,0 +1,13 @@
+.review {
+  margin-top: $space_3l;
+  padding: $space_3l 0;
+  &__item {
+    padding: $space_3l 0 0;
+    border-bottom: 1px solid #ddd;
+  }
+
+  &__info {
+    padding: $space_m 0;
+    display: inline-block;
+  }
+}

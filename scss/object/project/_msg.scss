@@ -2,10 +2,10 @@
 @mixin comment{
     display: flex;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom:45px;
 }
 .p-msg{
-  width: 40%;
+  width: 50%;
     &__info{
         background: #f5f5f5;
         padding: 20px;
@@ -41,7 +41,7 @@
     &__area{
         height: 500px;
         background: #f5f5f5;
-        padding: 15px;
+        padding: 40px 20px 0;
         overflow-y: scroll;
     }
     &__comment{
@@ -65,7 +65,7 @@
                     border-left-width:19px;
                     border-right-width:19px;
                     margin-top: -11px;
-                    border-right-color:#d2eaf2;
+                    border-right-color: #b6ffbc;
                     right:100%;
                     top:50%;
                     }
@@ -91,7 +91,7 @@
                     border-left-width:19px;
                     border-right-width:19px;
                     margin-top: -11px;
-                    border-left-color:#d2eaf2;
+                    border-left-color: #b6ffbc;
                     left:100%;
                     top:50%;
                 }
@@ -110,14 +110,14 @@
         }
     }
     &__text{
-        background: #d2eaf2;
+        background: #b6ffbc;
         width: 85%;
         padding: 10px;
         border-radius: 5px;
         position: relative;
     }
     &__send{
-        padding: 15px;
+        padding: 20px;
         background: #f5f5f5;
         overflow: hidden;
         & textarea{

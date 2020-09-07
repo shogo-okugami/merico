@@ -48,14 +48,12 @@ if (!empty($_POST)) {
     validMaxLen($pass_re, 'pass_re');
     //パスワード（再入力）の最小文字数チェック
     validMinLen($pass_re, 'pass_re');
+    //パスワードとパスワード再入力が合っているかチェック
+    validMatch($pass, $pass_re, 'pass_re');
 
     if (empty($err_msg)) {
 
-      //パスワードとパスワード再入力が合っているかチェック
-      validMatch($pass, $pass_re, 'pass_re');
-
-      if (empty($err_msg)) {
-
+      try {
         //DBへ接続
         $dbh = dbConnect();
         //SQL文作成
@@ -82,6 +80,9 @@ if (!empty($_POST)) {
 
           header("Location:mypage.php"); //マイページへ
         }
+      } catch (PDOException $e) {
+        error_log('エラー発生：' . $e->getMessage());
+        $err_msg['common'] = MSG07;
       }
     }
   }

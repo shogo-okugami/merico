@@ -3,8 +3,9 @@
   margin: 0 auto;
   display: flex;
   padding: $space_3l*2 0;
+  justify-content: space-between;
   & .p-product{
-    width: 60%;
+    width: 40%;
     padding: 0;
     margin: 0;
     &__img {

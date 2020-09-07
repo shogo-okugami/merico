@@ -4,14 +4,14 @@ $(function () {
     $header = $('.js-header'),
     headerHeight = $header.innerHeight();
 
-    $window.on('scroll', function () {
-      var headerPosition = $header.offset().top;
-  
-      if ($window.scrollTop() > headerPosition) {
-        $header.addClass('is-fixed');
-        $body.css({ 'padding-top': headerHeight });
-      }
-    });
+  $window.on('scroll', function () {
+    var headerPosition = $header.offset().top;
+
+    if ($window.scrollTop() > headerPosition) {
+      $header.addClass('is-fixed');
+      $body.css({ 'padding-top': headerHeight });
+    }
+  });
 
   function fixScroll() {
     $body.append('<div class="c-overlay js-overlay"></div>');
@@ -77,6 +77,9 @@ $(function () {
     });
   }
   //タブ表示・切り替え
+  $('.js-tab').eq(0).addClass('is-active');
+  $('.js-tab-contents').eq(0).addClass('is-show');
+  
   $('.js-tab').on('click', function () {
     $(this).siblings().removeClass('is-active');
     $(this).addClass('is-active');
@@ -86,41 +89,7 @@ $(function () {
 
   });
 
-  var imglist = document.images;
-  console.log(imglist);
-  if (imglist.length > 0) {
-    for (var i = 0; i < imglist.length; i++) {
-      if (imglist[i].width > 0) {
-        $(imglist[i]).parent().siblings('.c-form__heading').children('.js-delete').show();
-      }
-    }
-  }
 
-  $('.js-file-input').on('change', function (e) {
-
-    var file = this.files[0],            // 2. files配列にファイルが入っています
-      $img = $(this).parents('.c-form__item').find('.js-prev-img'), // 3. jQueryのsiblingsメソッドで兄弟のimgを取得
-      fileReader = new FileReader();   // 4. ファイルを読み込むFileReaderオブジェクト
-    var $input = $(this);
-    // 5. 読み込みが完了した際のイベントハンドラ。imgのsrcにデータをセット
-    fileReader.onload = function (event) {
-      // 読み込んだデータをimgに設定
-      $img.attr('src', event.target.result).show();
-      console.log("画像が更新されました。");
-      $input.siblings('.js-delete').show();
-    };
-    // 6. 画像読み込み
-    fileReader.readAsDataURL(file);
-  });
-
-  $('.js-delete').on('click', function () {
-
-    $(this).hide();
-    $(this).siblings('.js-file-input').val('');
-    var $prevImg = $(this).parent().siblings('.js-prev').children('.js-prev-img');
-    $prevImg.attr('src', '').hide();
-
-  });
   // テキストエリアカウント
   var $countUp = $('.js-count'),
     $countView = $('.js-count-view');
@@ -136,7 +105,7 @@ $(function () {
   var sortIndex = $('.js-selected-value[name="sort"]').val();
 
   var $selectOption = $('.js-select-option');
-  console.log(sortIndex);
+
   $('.js-category-option').eq(categoryIndex).hide();
   $('.js-sort-option').eq(sortIndex).hide();
 
@@ -144,7 +113,7 @@ $(function () {
     var data = $(this).data();
     data = data.category || data.sort;
     var currentindex = $(this).index();
-    console.log(currentindex);
+
     $(this).addClass('is-active');
     $(this).parent().siblings('.js-selected-value').val(data);
     $(this).parent().siblings('.js-select-heading').text($(this).text());
@@ -162,7 +131,6 @@ $(function () {
     e.stopPropagation();
   });
 
-  //if ($('js-select-list').hasClass('is-active')) {
   $(document).click(function (event) {
     if (!$(event.target).closest('.js-select-form').length) {
       if (!$(event.target).closest('.c-btn--search').length) {

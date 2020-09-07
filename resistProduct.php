@@ -57,6 +57,7 @@ if (!empty($_POST)) {
   $comment = $_POST['comment'];
   $delete_flgs = $_POST['imgdelete'];
 
+  //productsテーブルの画像カラムにインサートする変数$pic1~3
   for ($i = 1; $i <= 3; $i++) {
     $pic = 'pic' . $i;
     $$pic = '';
@@ -73,7 +74,7 @@ if (!empty($_POST)) {
     //未入力チェック
     validRequired($name, 'name');
     //最大文字数チェック
-    validMaxLen($name, 'name', 20);
+    validMaxLen($name, 'name', 30);
     //セレクトボックスチェック
     validSelect($category, 'category');
     //最大文字数チェック
@@ -91,7 +92,7 @@ if (!empty($_POST)) {
       //未入力チェック
       validRequired($name, 'name');
       //最大文字数チェック
-      validMaxLen($name, 'name', 20);
+      validMaxLen($name, 'name', 30);
     }
     if ($dbFormData['category_id'] !== $category) {
       //セレクトボックスチェック
@@ -117,33 +118,37 @@ if (!empty($_POST)) {
   if (empty($err_msg)) {
     debug('バリデーションOKです。');
 
+    try {
+      //DBへ接続
+      $dbh = dbConnect();
+      //SQL文作成
+      //編集画面の場合はUPDATE文、新規登録画面の場合はINSERT文を生成
+      if ($edit_flg) {
+        debug('DB更新です。');
+        $sql = 'UPDATE products SET name = :name, category_id = :category, price = :price, comment = :comment, pic1 = :pic1, pic2 = :pic2, pic3 = :pic3 WHERE user_id = :user_id AND id = :product_id';
+        $data = array(':name' => $name, ':category' => $category, ':price' => $price, ':comment' => $comment, ':pic1' => $pic1, ':pic2' => $pic2, ':pic3' => $pic3, ':user_id' => $_SESSION['user_id'], ':product_id' => $product_id);
+      } else {
+        debug('DB新規登録です。');
+        $sql = 'insert into products (name, category_id, price, comment, pic1, pic2, pic3, user_id, create_date ) values (:name, :category, :price, :comment, :pic1, :pic2, :pic3, :user_id, :date)';
+        $data = array(':name' => $name, ':category' => $category, ':price' => $price, ':comment' => $comment, ':pic1' => $pic1, ':pic2' => $pic2, ':pic3' => $pic3, ':user_id' => $_SESSION['user_id'], ':date' => date('Y-m-d H:i:s'));
+      }
+      debug('SQL；' . $sql);
+      debug('流し込みデータ：' . print_r($data, true));
+      //クエリ実行
+      $stmt = execute($dbh, $sql, $data);
 
-    //DBへ接続
-    $dbh = dbConnect();
-    //SQL文作成
-    //編集画面の場合はUPDATE文、新規登録画面の場合はINSERT文を生成
-    if ($edit_flg) {
-      debug('DB更新です。');
-      $sql = 'UPDATE products SET name = :name, category_id = :category, price = :price, comment = :comment, pic1 = :pic1, pic2 = :pic2, pic3 = :pic3 WHERE user_id = :user_id AND id = :product_id';
-      $data = array(':name' => $name, ':category' => $category, ':price' => $price, ':comment' => $comment, ':pic1' => $pic1, ':pic2' => $pic2, ':pic3' => $pic3, ':user_id' => $_SESSION['user_id'], ':product_id' => $product_id);
-    } else {
-      debug('DB新規登録です。');
-      $sql = 'insert into products (name, category_id, price, comment, pic1, pic2, pic3, user_id, create_date ) values (:name, :category, :price, :comment, :pic1, :pic2, :pic3, :user_id, :date)';
-      $data = array(':name' => $name, ':category' => $category, ':price' => $price, ':comment' => $comment, ':pic1' => $pic1, ':pic2' => $pic2, ':pic3' => $pic3, ':user_id' => $_SESSION['user_id'], ':date' => date('Y-m-d H:i:s'));
-    }
-    debug('SQL；' . $sql);
-    debug('流し込みデータ：' . print_r($data, true));
-    //クエリ実行
-    $stmt = execute($dbh, $sql, $data);
-
-    //クエリ成功の場合
-    if ($stmt) {
-      $_SESSION['msg_success'] = SUC04;
-      unset($_SESSION['token']);
-      debug('マイページへ遷移します。');
-      header("Location:mypage.php");
-    } else {
-      header("Location:{resistProduct.php?product_id={$product_id}");
+      //クエリ成功の場合
+      if ($stmt) {
+        $_SESSION['msg_success'] = SUC04;
+        unset($_SESSION['token']);
+        debug('マイページへ遷移します。');
+        header("Location:mypage.php");
+      } else {
+        header("Location:{resistProduct.php?product_id={$product_id}");
+      }
+    } catch (PDOException $e) {
+      error_log('エラー発生：' . $e->getMessage());
+      $err_msg['common'] = MSG07;
     }
   }
 }

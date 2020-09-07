@@ -56,7 +56,7 @@ if (!empty($_POST)) {
     if (empty($err_msg)) {
       debug('バリデーションOK。');
 
-    
+      try {
         //DBへ接続
         $dbh = dbConnect();
         //SQL文作成
@@ -71,7 +71,10 @@ if (!empty($_POST)) {
           debug('マイページへ遷移します。');
           header("Location:mypage.php");
         }
-     
+      } catch (PDOException $e) {
+        error_log('エラー発生：' . $e->getMessage());
+        $err_msg['common'] = MSG07;
+      }
     }
   }
 }

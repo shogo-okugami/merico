@@ -16,7 +16,8 @@ if (isset($_POST['productid']) && isset($_SESSION['user_id']) && isLogin()) {
   debug('POST送信があります。');
   $product_id = (int)$_POST['productid'];
   debug('商品ID：' . $product_id);
-  
+
+  try {
     // DBへ接続
     $dbh = dbConnect();
     // レコードがあるか検索
@@ -40,6 +41,10 @@ if (isset($_POST['productid']) && isset($_SESSION['user_id']) && isLogin()) {
       // クエリ実行
       $stmt = execute($dbh, $sql, $data);
     }
-  
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
+  }
 }
 debug('Ajax処理終了 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
+exit;

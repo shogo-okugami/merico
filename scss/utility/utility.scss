@@ -2,6 +2,7 @@
 
 .u-bgColor--gray {
   background: #f4f7f8;
+  min-height: 100vh;
 }
 
 .u-extendLink {
@@ -20,4 +21,12 @@
 
 .u-mb35 {
   margin-bottom: $space_3l - 5;
+}
+
+.u-ml15 {
+  margin-left: $space_l;
+}
+
+.u-mt40 {
+  margin-top: $space_3l;
 }

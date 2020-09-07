@@ -1,16 +1,28 @@
 @import "../config/variable";
 
-.c-container{
-    width: 1200px;
-    margin: 0 auto;
-    padding-top: $space_3l * 2;
-    padding-bottom: $space_3l * 3;
-    &__title{
-        text-align: center;
-        margin-bottom: $space_3l;
-        font-size: $font-size_3l;
-    }
-    &__body{
-        text-align: center;
-    }
+.c-container {
+  width: 1200px;
+  margin: 0 auto;
+  padding-top: $space_3l * 2;
+  padding-bottom: $space_3l * 3;
+  &__title {
+    text-align: center;
+    margin-bottom: $space_3l;
+    font-size: $font-size_3l;
+  }
+  &__body {
+    //text-align: center;
+    background: #fff;
+    min-height: 400px;
+    padding: $space_3l;
+  }
+  &__heading {
+    text-align: center;
+    font-size: 28px;
+  }
+  &__text--passive {
+    padding: 20px 0;
+    text-align: center;
+    font-size: 16px;
+  }
 }

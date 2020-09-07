@@ -28,6 +28,9 @@ if (!empty($_POST)) {
   debug('POST情報：' . print_r($_POST, true));
   debug('FILE情報：' . print_r($_FILES, true));
 
+  //トークン判定
+  checkToken();
+
   //変数にユーザー情報を代入
   $name = $_POST['name'];
   $comment = $_POST['comment'];
@@ -61,22 +64,27 @@ if (!empty($_POST)) {
   if (empty($err_msg)) {
     debug('バリデーションがOKです。');
 
-    //DBへ接続
-    $dbh = dbConnect();
-    //SQL文作成
-    $sql = 'UPDATE users SET name = :user_name, email = :email, comment = :comment, pic = :pic WHERE id = :user_id';
-    $data = array(':user_name' => $name, ':email' => $email, ':comment' => $comment, ':pic' => $pic, ':user_id' => $dbFormData['id']);
-    //クエリ実行
-    $stmt = execute($dbh, $sql, $data);
+    try {
+      //DBへ接続
+      $dbh = dbConnect();
+      //SQL文作成
+      $sql = 'UPDATE users SET name = :user_name, email = :email, comment = :comment, pic = :pic WHERE id = :user_id';
+      $data = array(':user_name' => $name, ':email' => $email, ':comment' => $comment, ':pic' => $pic, ':user_id' => $dbFormData['id']);
+      //クエリ実行
+      $stmt = execute($dbh, $sql, $data);
 
-    //クエリ成功の場合
-    if ($stmt) {
-      $_SESSION['msg_success'] = SUC02;
-      unset($_SESSION['token']);
-      debug('マイページへ遷移します。');
-      header("Location:mypage.php");
-    }else{
-      header("Location:profEdit.php");
+      //クエリ成功の場合
+      if ($stmt) {
+        $_SESSION['msg_success'] = SUC02;
+        unset($_SESSION['token']);
+        debug('マイページへ遷移します。');
+        header("Location:mypage.php");
+      } else {
+        header("Location:profEdit.php");
+      }
+    } catch (PDOException $e) {
+      error_log('エラー発生：' . $e->getMessage());
+      $err_msg['common'] = MSG07;
     }
   }
 }

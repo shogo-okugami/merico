@@ -43,6 +43,7 @@ if (!empty($_POST)) {
   if (empty($err_msg)) {
     debug('バリデーションOKです。');
 
+    try {
       //DBへ接続
       $dbh = dbConnect();
       //SQL文作成
@@ -87,7 +88,10 @@ if (!empty($_POST)) {
         debug('パスワードがアンマッチです。');
         $err_msg['common'] = MSG09;
       }
-   
+    } catch (PDOException $e) {
+      error_log('エラー発生：' . $e->getMessage());
+      $err_msg['common'] = MSG07;
+    }
   }
 }
 debug('画面表示処理終了 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
@@ -106,7 +110,7 @@ require('head.php');
   <main>
     <div class="u-bgColor--gray">
       <section class="c-container">
-        
+
         <form action="" method="POST" class="c-form">
           <div class="c-form__msg">
             <?php

@@ -33,47 +33,50 @@ if (!empty($_POST)) {
 
   //ログイン済みの場合購入できる
   if (isLogin()) {
-    
 
-    //DBへ接続
-    $dbh = dbConnect();
-    //購入の場合
-    if (!empty($_POST['submit'])) {
-      //SQL文作成
-      $sql1 = 'INSERT INTO bord (seller_id, buyer_id, product_id, create_date) VALUES (:seller_id, :buyer_id, :product_id, :date)';
-      $sql2 = 'UPDATE products SET search_flg = 1 WHERE id = :product_id';
-      $data1 = array(':seller_id' => $viewData['user_id'], ':buyer_id' => $_SESSION['user_id'], ':product_id' => $product_id, ':date' => date('Y-m-d H:i:s'));
-      $data2 = array(':product_id' => $product_id);
-      //クエリ実行
-      try {
-        $dbh->beginTransaction();
-        $stmt2 = execute($dbh, $sql2, $data2);
-        $stmt1 = execute($dbh, $sql1, $data1);
-        //クエリ成功の場合
-        if ($stmt1 && $stmt2) {
-
-          $_SESSION['msg_success'] = SUC06;
-          debug('連絡掲示板へ遷移します。');
-          header("Location:bord.php?bord_id=" . $dbh->lastInsertId()); //連絡掲示板へ
-          $dbh->commit();
+    try {
+      //DBへ接続
+      $dbh = dbConnect();
+      //購入の場合
+      if (!empty($_POST['submit'])) {
+        //SQL文作成
+        $sql1 = 'INSERT INTO bord (seller_id, buyer_id, product_id, create_date) VALUES (:seller_id, :buyer_id, :product_id, :date)';
+        $sql2 = 'UPDATE products SET search_flg = 1 WHERE id = :product_id';
+        $data1 = array(':seller_id' => $viewData['user_id'], ':buyer_id' => $_SESSION['user_id'], ':product_id' => $product_id, ':date' => date('Y-m-d H:i:s'));
+        $data2 = array(':product_id' => $product_id);
+        //クエリ実行
+        try {
+          $dbh->beginTransaction();
+          $stmt2 = execute($dbh, $sql2, $data2);
+          $stmt1 = execute($dbh, $sql1, $data1);
+          //クエリ成功の場合
+          if ($stmt1 && $stmt2) {
+            $dbh->commit();
+            $_SESSION['msg_success'] = SUC06;
+            debug('連絡掲示板へ遷移します。');
+            header("Location:bord.php?bord_id=" . $dbh->lastInsertId()); //連絡掲示板へ
+          }
+        } catch (Exception $e) {
+          $dbh->rollBack();
+          error_log('エラー発生：' . $e->getMessage());
+          $err_msg['common'] = MSG07;
         }
-      } catch (Exception $e) {
-        $dbh->rollBack();
-        error_log('エラー発生：' . $e->getMessage());
-        $err_msg['common'] = MSG07;
       }
-    }
-    //削除の場合
-    if (!empty($_POST['delete'])) {
-      //SQL文作成
-      $sql = 'UPDATE products SET delete_flg = 1 WHERE user_id = :user_id AND id = :product_id';
-      $data = array(':user_id' => $viewData['user_id'], ':product_id' => $product_id);
-      //クエリ実行
-      $stmt = execute($dbh, $sql, $data);
-      if ($stmt) {
-        debug('マイページへ遷移します。');
-        header("Location:mypage.php");
+      //削除の場合
+      if (!empty($_POST['delete'])) {
+        //SQL文作成
+        $sql = 'UPDATE products SET delete_flg = 1 WHERE user_id = :user_id AND id = :product_id';
+        $data = array(':user_id' => $viewData['user_id'], ':product_id' => $product_id);
+        //クエリ実行
+        $stmt = execute($dbh, $sql, $data);
+        if ($stmt) {
+          debug('マイページへ遷移します。');
+          header("Location:mypage.php");
+        }
       }
+    } catch (PDOException $e) {
+      error_log('エラー発生：' . $e->getMessage());
+      $err_msg['common'] = MSG07;
     }
   } else {
     $_SESSION['link'];
@@ -159,7 +162,7 @@ require('head.php');
             <?php if ($_SESSION['user_id'] !== $viewData['user_id']) : ?>
               <?php if (!$viewData['search_flg']) : ?>
                 <form action="" method="post">
-                  <input type="submit" class="c-btn--primary" value="購入する" name="submit">
+                  <input type="submit" class="c-btn--submit c-btn--primary" value="購入する" name="submit">
                 </form>
               <?php endif; ?>
             <?php endif; ?>

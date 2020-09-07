@@ -9,6 +9,6 @@ if(!empty($_POST['bord_id'])){
 
   if(isset($viewData[0]['msg'])){
     echo json_encode($viewData);
-    exit;
   }
 }
+exit;

@@ -11,7 +11,7 @@ ini_set('error_log', 'php.log');
 // デバッグ
 //================================
 //デバッグフラグ
-$debug_flg = false;
+$debug_flg = true;
 /**
  * デバッグログ出力関数
  * 
@@ -27,6 +27,8 @@ function debug($str)
 //================================
 // セッション準備・セッション有効期限を延ばす
 //================================
+//セッションファイルの置き場を変更する（/var/tmp/以下に置くと30日は削除されない）
+session_save_path("/var/tmp/");
 //ガーベージコレクションが削除するセッションの有効期限を設定（30日以上経っているものに対してだけ１００分の１の確率で削除）
 ini_set('session.gc_maxlifetime', 60 * 60 * 24 * 30);
 //ブラウザを閉じても削除されないようにクッキー自体の有効期限を延ばす
@@ -58,24 +60,24 @@ define('MSG01', '入力必須です');
 define('MSG02', 'Emailの形式で入力してください');
 define('MSG03', 'パスワード（確認）が合っていません');
 define('MSG04', '半角英数字のみご利用いただけます');
-define('MSG05', '6文字以上で入力してください');
-define('MSG06', "255文字以内で入力してください");
+define('MSG05', '6文字以上で入力してください。');
+define('MSG06', "255文字以内で入力してください。");
 define('MSG07', 'エラーが発生しました。しばらく経ってからやり直してください。');
-define('MSG08', 'そのEmailは既に登録されています');
-define('MSG09', 'メールアドレスまたはパスワードが違います');
-define('MSG10', '20文字以内で入力してください');
-define('MSG11', '画像を選択してください');
-define('MSG12', '古いパスワードが違います');
-define('MSG13', '古いパスワードと同じです');
-define('MSG14', '文字で入力してください');
-define('MSG15', '選択してください');
-define('MSG16', '不正なアクセスです。');
-define('MSG17', '半角数字のみご利用いただけます');
+define('MSG08', 'そのEmailは既に登録されています。');
+define('MSG09', 'メールアドレスまたはパスワードが違います。');
+define('MSG10', '30文字以内で入力してください。');
+define('MSG11', '画像を選択してください。');
+define('MSG12', '古いパスワードが違います。');
+define('MSG13', '古いパスワードと同じです。');
+define('MSG14', '文字で入力してください。');
+define('MSG15', '選択してください。');
+define('MSG16', '不正なアクセスです');
+define('MSG17', '半角数字のみご利用いただけます。');
 define('MSG18', '取引中の商品があるため退会できません。取引を完了してください。');
-define('SUC01', 'パスワードを変更しました');
-define('SUC02', 'プロフィールを更新しました');
-define('SUC03', 'メールを送信しました');
-define('SUC04', '商品を登録しました');
+define('SUC01', 'パスワードを変更しました。');
+define('SUC02', 'プロフィを変更しました。');
+define('SUC03', '取引が完了しました。ご利用ありがとうございます。');
+define('SUC04', '商品を登録しました。');
 define('SUC06', '購入しました。相手と連絡を取りましょう。');
 
 
@@ -186,7 +188,7 @@ function validMaxlen($str, $key, $max = 255)
 {
   if (mb_strlen($str) > $max) {
     global $err_msg;
-    if ($max === 20) {
+    if ($max === 30) {
       $err_msg[$key] = MSG10;
     } else {
       $err_msg[$key] = MSG06;
@@ -328,13 +330,8 @@ function dbConnect()
     PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
   );
   //PDOオブジェクト生成（DBへ接続）
-  try {
-    $dbh = new PDO($dsn, $user, $password, $options);
-    return $dbh;
-  } catch (PDOException $e) {
-    error_log('エラー発生：' . $e->getMessage());
-    $err_msg['common'] = MSG07;
-  }
+  $dbh = new PDO($dsn, $user, $password, $options);
+  return $dbh;
 }
 
 /**
@@ -417,19 +414,24 @@ function getUser(int $user_id)
 {
   debug('ユーザー情報を取得します。');
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //SQL文作成
-  $sql = 'SELECT * FROM users WHERE id = :user_id AND delete_flg = 0';
-  $data = array(':user_id' => $user_id);
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    $sql = 'SELECT * FROM users WHERE id = :user_id';
+    $data = array(':user_id' => $user_id);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
 
-  //クエリ結果のデータを１レコード返却
-  if ($stmt) {
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-  } else {
-    return false;
+    //クエリ結果のデータを１レコード返却
+    if ($stmt) {
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 /**
@@ -446,19 +448,24 @@ function getProduct(int $user_id, int $product_id)
   debug('ユーザーID：' . $user_id);
   debug('商品ID：' . $product_id);
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //SQL文作成
-  $sql = 'SELECT * FROM products WHERE user_id = :user_id AND id = :product_id AND delete_flg = 0';
-  $data = array(':user_id' => $user_id, ':product_id' => $product_id);
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    $sql = 'SELECT * FROM products WHERE user_id = :user_id AND id = :product_id AND delete_flg = 0';
+    $data = array(':user_id' => $user_id, ':product_id' => $product_id);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
 
-  if ($stmt) {
-    //クエリ結果のデータを１レコード返却
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-  } else {
-    return false;
+    if ($stmt) {
+      //クエリ結果のデータを１レコード返却
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 /**
@@ -475,60 +482,65 @@ function getProductList($currentMinNum = 1, int $category, int $sort, string $wo
 {
   debug('商品情報を取得します。');
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //件数用のSQL文作成
-  $sql = 'SELECT * FROM products WHERE search_flg = 0 AND delete_flg = 0';
-  $where = array();
-  $data = array();
-  if (!empty($category)) {
-    array_push($where, "category_id = :category_id");
-    $data += array(':category_id' => $category);
-  }
-  if (!empty($sort)) {
-    switch ($sort) {
-      case 1:
-        $order = " ORDER BY create_date desc";
-        break;
-      case 2:
-        $order = " ORDER BY price ASC";
-        break;
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //件数用のSQL文作成
+    $sql = 'SELECT * FROM products WHERE search_flg = 0 AND delete_flg = 0';
+    $where = array();
+    $data = array();
+    if (!empty($category)) {
+      array_push($where, "category_id = :category_id");
+      $data += array(':category_id' => $category);
     }
-  }
-  if (!empty($word)) {
-    $word = '%' . preg_replace('/(?=[!_%])/', '!', $word) . '%';
-    array_push($where, "name LIKE :word");
-    $data += array(':word' => $word);
-  }
-  if (!empty($where)) {
-    $whereSql = implode(' AND ', $where);
-    $sql .= ' AND ' . $whereSql;
-  }
-  if ($order) {
-    $sql .= $order;
-  }
-  debug('バインドパラメータ：' . print_r($data, true));
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
-  $rst['total'] = $stmt->rowCount(); //総レコード数
-  $rst['total_page'] = ceil($rst['total'] / $span); //総ページ数
-  if (!$stmt) {
-    return false;
-  }
+    if (!empty($sort)) {
+      switch ($sort) {
+        case 1:
+          $order = " ORDER BY create_date desc";
+          break;
+        case 2:
+          $order = " ORDER BY price ASC";
+          break;
+      }
+    }
+    if (!empty($word)) {
+      $word = '%' . preg_replace('/(?=[!_%])/', '!', $word) . '%';
+      array_push($where, "name LIKE :word");
+      $data += array(':word' => $word);
+    }
+    if (!empty($where)) {
+      $whereSql = implode(' AND ', $where);
+      $sql .= ' AND ' . $whereSql;
+    }
+    if ($order) {
+      $sql .= $order;
+    }
+    debug('バインドパラメータ：' . print_r($data, true));
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
+    $rst['total'] = $stmt->rowCount(); //総レコード数
+    $rst['total_page'] = ceil($rst['total'] / $span); //総ページ数
+    if (!$stmt) {
+      return false;
+    }
 
-  //ページング用のSQL文作成
-  $sql .= ' LIMIT ' . $span . ' OFFSET ' . $currentMinNum;
+    //ページング用のSQL文作成
+    $sql .= ' LIMIT ' . $span . ' OFFSET ' . $currentMinNum;
 
-  debug('SQL：' . $sql);
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
+    debug('SQL：' . $sql);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
 
-  if ($stmt) {
-    //クエリ結果のデータを全レコード格納
-    $rst['data'] = $stmt->fetchAll();
-    return $rst;
-  } else {
-    return false;
+    if ($stmt) {
+      //クエリ結果のデータを全レコード格納
+      $rst['data'] = $stmt->fetchAll();
+      return $rst;
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 /**
@@ -543,20 +555,25 @@ function showProduct(int $product_id)
   debug('商品情報を取得します。');
   debug('商品ID：' . $product_id);
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //SQL文作成
-  $sql = 'SELECT p.id, p.name, p.comment, p.pic1, p.pic2, p.pic3, p.price, p.category_id, p.user_id, p.search_flg, p.create_date, c.name AS category 
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    $sql = 'SELECT p.id, p.name, p.comment, p.pic1, p.pic2, p.pic3, p.price, p.category_id, p.user_id, p.search_flg, p.create_date, c.name AS category 
             FROM products AS p LEFT JOIN category AS c ON p.category_id = c.id WHERE p.id = :product_id AND p.delete_flg = 0';
-  $data = array(':product_id' => $product_id);
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
+    $data = array(':product_id' => $product_id);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
 
-  if ($stmt) {
-    //クエリ結果のデータを１レコード取得
-    return $stmt->fetch(PDO::FETCH_ASSOC);
-  } else {
-    return false;
+    if ($stmt) {
+      //クエリ結果のデータを１レコード取得
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 /**
@@ -571,18 +588,23 @@ function getMyProduct(int $user_id)
   debug('商品情報を取得します。');
   debug('ユーザーID：' . $user_id);
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //SQL文作成
-  $sql = 'SELECT * FROM products WHERE user_id = :user_id AND delete_flg = 0';
-  $data = array(':user_id' => $user_id);
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    $sql = 'SELECT * FROM products WHERE user_id = :user_id AND delete_flg = 0';
+    $data = array(':user_id' => $user_id);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
 
-  if ($stmt) {
-    return $stmt->fetchAll();
-  } else {
-    return false;
+    if ($stmt) {
+      return $stmt->fetchAll();
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 /**
@@ -601,23 +623,28 @@ function getMsgsAndBord(int $id, bool $all_flg = true)
   debug('掲示板情報を取得します。');
   debug('掲示板ID：' . $id);
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //SQL文作成
-  if ($all_flg) {
-    $sql = 'SELECT m.id AS m_id, product_id, m.bord_id, send_username, send_date, to_user_id, from_user_id, seller_id, buyer_id, msg, b.create_date, buy_flg, sell_flg,complete_flg FROM bord AS b LEFT JOIN message AS m ON b.id = m.bord_id WHERE b.id = :id AND b.delete_flg = 0 ORDER BY send_date ASC';
-  } else {
-    $sql = 'SELECT m.id AS m_id, product_id, m.bord_id, send_username, send_date, to_user_id, from_user_id, seller_id, buyer_id, msg, b.create_date, buy_flg, sell_flg,complete_flg FROM bord AS b LEFT JOIN message AS m ON b.id = m.bord_id WHERE b.id = :id AND b.delete_flg = 0 ORDER BY send_date DESC LIMIT 1';
-  }
-  $data = array(':id' => $id);
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    if ($all_flg) {
+      $sql = 'SELECT m.id AS m_id, product_id, m.bord_id, send_username, send_date, to_user_id, from_user_id, seller_id, buyer_id, msg, b.create_date, buy_flg, sell_flg,complete_flg FROM bord AS b LEFT JOIN message AS m ON b.id = m.bord_id WHERE b.id = :id AND b.delete_flg = 0 ORDER BY send_date ASC';
+    } else {
+      $sql = 'SELECT m.id AS m_id, product_id, m.bord_id, send_username, send_date, to_user_id, from_user_id, seller_id, buyer_id, msg, b.create_date, buy_flg, sell_flg,complete_flg FROM bord AS b LEFT JOIN message AS m ON b.id = m.bord_id WHERE b.id = :id AND b.delete_flg = 0 ORDER BY send_date DESC LIMIT 1';
+    }
+    $data = array(':id' => $id);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
 
-  if ($stmt) {
-    //クエリ結果の全データを返却
-    return $stmt->fetchAll();
-  } else {
-    return false;
+    if ($stmt) {
+      //クエリ結果の全データを返却
+      return $stmt->fetchAll();
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 /**
@@ -635,23 +662,28 @@ function getMyProductAndBord(int $user_id, bool $flg = false)
 {
   debug('自分の掲示板情報を取得します。');
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //SQL文作成
-  if ($flg) {
-    $flg = 1;
-  } else {
-    $flg = 0;
-  }
-  $sql = "SELECT p.pic1, p.name, b.complete_flg, b.id AS bord FROM products AS p INNER JOIN bord AS b ON p.id = b.product_id WHERE p.delete_flg = 0 AND b.complete_flg = {$flg} AND (b.seller_id = :user_id OR b.buyer_id = :user_id)  ORDER BY b.create_date ASC";
-  $data = array(':user_id' => $user_id);
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
-  if ($stmt) {
-    //クエリ結果の全データを取得
-    return $stmt->fetchAll();
-  } else {
-    return false;
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    if ($flg) {
+      $flg = 1;
+    } else {
+      $flg = 0;
+    }
+    $sql = "SELECT p.pic1, p.name, b.complete_flg, b.id AS bord FROM products AS p INNER JOIN bord AS b ON p.id = b.product_id WHERE p.delete_flg = 0 AND b.complete_flg = {$flg} AND (b.seller_id = :user_id OR b.buyer_id = :user_id)  ORDER BY b.create_date ASC";
+    $data = array(':user_id' => $user_id);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
+    if ($stmt) {
+      //クエリ結果の全データを取得
+      return $stmt->fetchAll();
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 
@@ -659,31 +691,36 @@ function getMyMsgsAndBord(int $user_id)
 {
   debug('自分の掲示板情報を取得します。');
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //掲示板レコード取得
-  //SQL文作成
-  $sql = 'SELECT * FROM bord AS b WHERE b.seller_id = :id OR b.buyer_id = :id AND b.delete_flg = 0';
-  $data = array(':id' => $user_id);
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
-  $rst = $stmt->fetchAll();
-  if (!empty($rst)) {
-    foreach ($rst as $key => $val) {
-      //SQL文作成
-      $sql = 'SELECT * FROM message WHERE bord_id = :id AND to_user_id = :user_id AND delete_flg = 0 ORDER BY send_date DESC';
-      $data = array(':id' => $val['id'], ':user_id' => $user_id);
-      //クエリ実行
-      $stmt = execute($dbh, $sql, $data);
-      $rst[$key]['msg'] = $stmt->fetchAll();
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //掲示板レコード取得
+    //SQL文作成
+    $sql = 'SELECT * FROM bord AS b WHERE b.seller_id = :id OR b.buyer_id = :id AND b.delete_flg = 0';
+    $data = array(':id' => $user_id);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
+    $rst = $stmt->fetchAll();
+    if (!empty($rst)) {
+      foreach ($rst as $key => $val) {
+        //SQL文作成
+        $sql = 'SELECT * FROM message WHERE bord_id = :id AND to_user_id = :user_id AND delete_flg = 0 ORDER BY send_date DESC';
+        $data = array(':id' => $val['id'], ':user_id' => $user_id);
+        //クエリ実行
+        $stmt = execute($dbh, $sql, $data);
+        $rst[$key]['msg'] = $stmt->fetchAll();
+      }
     }
-  }
 
-  if ($stmt) {
-    //クエリ結果の全データを返却
-    return $rst;
-  } else {
-    return false;
+    if ($stmt) {
+      //クエリ結果の全データを返却
+      return $rst;
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 /**
@@ -695,15 +732,98 @@ function getMyMsgsAndBord(int $user_id)
  */
 function getMsg(int $message_id)
 {
-  $dbh = dbConnect();
-  $sql = 'SELECT * FROM message WHERE id = :message_id';
-  $data = array(':message_id' => $message_id);
-  $stmt = execute($dbh, $sql, $data);
-  if ($stmt) {
-    //クエリ結果のデータを１レコード返却
-    return $stmt->fetch(PDO::FETCH_ASSOC);
+  try {
+    $dbh = dbConnect();
+    $sql = 'SELECT * FROM message WHERE id = :message_id';
+    $data = array(':message_id' => $message_id);
+    $stmt = execute($dbh, $sql, $data);
+    if ($stmt) {
+      //クエリ結果のデータを１レコード返却
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
+  }
+}
+/**
+ * ユーザーの平均評価を取得します
+ * 
+ * @param int $user_id
+ * 
+ * @return array
+ */
+function getAvgRate(int $user_id)
+{
+  try {
+    $dbh = dbConnect();
+    $sql = 'SELECT ROUND(AVG(rate),1) AS avg_rate FROM `reviews` WHERE user_id = :user_id';
+    $data = array(':user_id' => $user_id);
+    $stmt = execute($dbh, $sql, $data);
+    if ($stmt) {
+      return $stmt->fetch(PDO::FETCH_ASSOC);
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
+  }
+}
+/**
+ * 評価の値をdata属性に設定します
+ * 
+ * @param float $rate
+ * 
+ * @return mixed
+ */
+function setRate(float $rate)
+{
+  //$rateの値から表示する星の数を設定
+  if (1 <= $rate && $rate <= 1.3) {
+    return 1;
+  } elseif (1.3 < $rate && $rate <= 1.7) {
+    return 1.5;
+  } elseif (1.7 < $rate && $rate <= 2.3) {
+    return 2;
+  } elseif (2.3 < $rate && $rate <= 2.7) {
+    return 2.5;
+  } elseif (2.7 < $rate && $rate <= 3.3) {
+    return 3;
+  } elseif (3.3 < $rate && $rate <= 3.7) {
+    return 3.5;
+  } elseif (3.7 < $rate && $rate <= 4.3) {
+    return 4;
+  } elseif (4.3 < $rate && $rate <= 4.7) {
+    return 4.5;
   } else {
-    return false;
+    return 5;
+  }
+}
+/**
+ * ユーザーのレビュー情報を取得します
+ * 
+ * @param int $user_id
+ * 
+ * @return array
+ */
+function getReviews(int $user_id)
+{
+  try {
+    $dbh = dbConnect();
+    $sql = 'SELECT * FROM `reviews` WHERE user_id = :user_id ORDER BY create_date DESC';
+    $data = array(':user_id' => $user_id);
+    $stmt = execute($dbh, $sql, $data);
+    if ($stmt) {
+      return $stmt->fetchAll();
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 /**
@@ -715,19 +835,24 @@ function getCategory()
 {
   debug('カテゴリー情報を取得します。');
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //SQL文作成
-  $sql = 'SELECT * FROM category';
-  $data = array();
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    $sql = 'SELECT * FROM category';
+    $data = array();
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
 
-  if ($stmt) {
-    //クエリ結果の全データを返却
-    return $stmt->fetchAll();
-  } else {
-    return false;
+    if ($stmt) {
+      //クエリ結果の全データを返却
+      return $stmt->fetchAll();
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 /**
@@ -739,59 +864,89 @@ function getSort()
 {
   debug('ソート情報を取得します。');
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //SQL文作成
-  $sql = 'SELECT * FROM sort';
-  $data = array();
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    $sql = 'SELECT * FROM sort';
+    $data = array();
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
 
-  if ($stmt) {
-    //クエリ結果の全データを返却
-    return $stmt->fetchAll();
-  } else {
-    return false;
+    if ($stmt) {
+      //クエリ結果の全データを返却
+      return $stmt->fetchAll();
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
+/**
+ * お気に入りの商品であるかを判定します
+ * 
+ * @param int $user_id
+ * @param int $product_id
+ * 
+ * @return bool
+ */
 function isfavorite(int $user_id, int $product_id)
 {
   debug('お気に入り情報があるか確認します。');
   debug('ユーザーID；' . $user_id);
   debug('商品ID；' . $product_id);
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //SQL文作成
-  $sql = 'SELECT * FROM `like` WHERE product_id = :product_id AND user_id = :user_id';
-  $data = array(':user_id' => $user_id, ':product_id' => $product_id);
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    $sql = 'SELECT * FROM `like` WHERE product_id = :product_id AND user_id = :user_id';
+    $data = array(':user_id' => $user_id, ':product_id' => $product_id);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
 
-  if ($stmt->rowCount()) {
-    debug('お気に入りです。');
-    return true;
-  } else {
-    debug('お気に入りではありません。');
+    if ($stmt->rowCount()) {
+      debug('お気に入りです。');
+      return true;
+    } else {
+      debug('お気に入りではありません。');
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
+/**
+ * ユーザーがお気に入り登録した商品を取得します
+ * 
+ * @param int $user_id
+ * 
+ * @return mixed
+ */
 function getMyLike(int $user_id)
 {
   debug('自分のお気に入り情報を取得します。');
   debug('ユーザーID：' . $user_id);
 
-  //DBへ接続
-  $dbh = dbConnect();
-  //SQL文作成
-  $sql = 'SELECT * FROM `like` AS l LEFT JOIN products AS p ON l.product_id = p.id WHERE l.user_id = :user_id AND p.search_flg = 0 AND l.delete_flg = 0 AND p.delete_flg = 0';
-  $data = array(':user_id' => $user_id);
-  //クエリ実行
-  $stmt = execute($dbh, $sql, $data);
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    $sql = 'SELECT * FROM `like` AS l LEFT JOIN products AS p ON l.product_id = p.id WHERE l.user_id = :user_id AND p.search_flg = 0 AND l.delete_flg = 0 AND p.delete_flg = 0';
+    $data = array(':user_id' => $user_id);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
 
-  if ($stmt) {
-    return $stmt->fetchAll();
-  } else {
-    return false;
+    if ($stmt) {
+      return $stmt->fetchAll();
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $err_msg['common'] = MSG07;
   }
 }
 //================================

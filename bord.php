@@ -40,7 +40,7 @@ if ($viewData[0]['product_id']) {
     header("Location:mypage.php"); //マイページへ
   }
 }
-//最新のデータを格納
+//最新の掲示板データを格納
 $lastViewData = end($viewData);
 // viewDataから相手のユーザーIDを取り出す
 $dealUserIds[] = $viewData[0]['seller_id'];
@@ -66,60 +66,6 @@ if (empty($myUserInfo)) {
   header("Location:mypage.php"); //マイページへ
 }
 
-//トークンを格納
-setToken();
-
-// post送信されていた場合
-if (!empty($_POST)) {
-  debug('POST送信があります。');
-
-  //ログイン認証
-  if (isLogin()) {
-    
-      // DBへ接続
-      $dbh = dbConnect();
-
-      if (!empty($_POST['buy_flg'])) {
-        if ($viewData[0]['sell_flg']) {
-          $sql = 'UPDATE bord SET complete_flg = 1 ,buy_flg = 1 WHERE id = :bord_id';
-          $data = array(':bord_id' => $bord_id);
-          $stmt = execute($dbh, $sql, $data);
-          if ($stmt) {
-            header("Location:mypage.php");
-          }
-        } else {
-          $sql = 'UPDATE bord SET buy_flg = 1 WHERE id = :bord_id';
-          $data = array(':bord_id' => $bord_id);
-          $stmt = execute($dbh, $sql, $data);
-          if ($stmt) {
-            header("Location:mypage.php");
-          }
-        }
-      }
-
-      if (!empty($_POST['sell_flg'])) {
-        if ($viewData[0]['buy_flg']) {
-          $sql = 'UPDATE bord SET complete_flg = 1 ,sell_flg = 1 WHERE id = :bord_id';
-          $data = array(':bord_id' => $bord_id);
-          $stmt = execute($dbh, $sql, $data);
-          if ($stmt) {
-            header("Location:mypage.php");
-          }
-        } else {
-          $sql = 'UPDATE bord SET sell_flg = 1 WHERE id = :bord_id';
-          $data = array(':bord_id' => $bord_id);
-          $stmt = execute($dbh, $sql, $data);
-          if ($stmt) {
-            header("Location:mypage.php");
-          }
-        }
-      }
-   
-  } else {
-    $_SESSION['link'];
-    getCurrentLink('bord_id', $bord_id);
-  }
-}
 
 debug('画面表示処理終了 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
 ?>
@@ -153,30 +99,53 @@ require('head.php');
           </div>
         <?php } ?>
         <form action="" method="POST">
+          <?php
+          //ユーザーと購入者のIDが一致している場合
+          if ($_SESSION['user_id'] === $viewData[0]['buyer_id']) {
+            //購入者（ユーザー）が取引を完了していない場合
+            if (!$viewData[0]['buy_flg']) {
+          ?>
+              <div><a href="reviewProduct.php?bord_id=<?php echo sanitize($bord_id); ?>" class="c-btn--primary c-form__input">取引を完了する</a></div>
+            <?php
+              //完了している場合
+            } else {
+            ?>
+              <div class="p-product__state--prohibit">取引を完了する</div>
+              <?php
+              //相手が取引を完了していない場合
+              if (!$viewData[0]['complete_flg']) {
+              ?>
+                <div class="p-product__msg">相手が取引を完了していません。しばらくお待ちください。</div>
+          <?php }
+            }
+          } ?>
 
-          <?php if ($_SESSION['user_id'] === $viewData[0]['buyer_id']) : ?>
-            <?php if (!$viewData[0]['buy_flg']) : ?>
-              <input type="submit" name="buy_flg" value="取引を完了する" class="c-btn--primary c-form__input">
-            <?php else : ?>
+          <?php
+          //ユーザーと出品者のIDが一致している場合
+          if ($_SESSION['user_id'] === $viewData[0]['seller_id']) {
+            //出品者（ユーザー）が取引を完了していない場合
+            if (!$viewData[0]['sell_flg']) {
+          ?>
+              <div><a href="reviewProduct.php?bord_id=<?php echo sanitize($bord_id); ?>" class="c-btn--primary c-form__input">取引を完了する</a></div>
+            <?php
+              //完了している場合
+            } else {
+            ?>
               <div class="p-product__state--prohibit">取引を完了する</div>
-              <?php if (!$viewData[0]['complete_flg']) : ?>
+              <?php
+              //相手が取引を完了していない場合
+              if (!$viewData[0]['complete_flg']) {
+              ?>
                 <div class="p-product__msg">相手が取引を完了していません。しばらくお待ちください。</div>
-              <?php endif; ?>
-            <?php endif; ?>
-          <?php endif; ?>
-          <?php if ($_SESSION['user_id'] === $viewData[0]['seller_id']) : ?>
-            <?php if (!$viewData[0]['sell_flg']) : ?>
-              <input type="submit" name="sell_flg" value="取引を完了する" class="c-btn--primary c-btn--submit">
-            <?php else : ?>
-              <div class="p-product__state--prohibit">取引を完了する</div>
-              <?php if (!$viewData[0]['complete_flg']) : ?>
-                <div class="p-product__msg">相手が取引を完了していません。しばらくお待ちください。</div>
-              <?php endif; ?>
-            <?php endif; ?>
-          <?php endif; ?>
-          <?php if ($viewData[0]['complete_flg']) : ?>
+          <?php }
+            }
+          } ?>
+          <?php
+          //購入者と出品者が取引を完了している場合
+          if ($viewData[0]['complete_flg']) {
+          ?>
             <div class="p-product__msg">取引が完了しました。mericoをご利用いただきありがとうございました。</div>
-          <?php endif; ?>
+          <?php } ?>
         </form>
       </div>
       <div class="p-msg">
@@ -218,14 +187,14 @@ require('head.php');
           ?>
 
         </div>
-  
+
         <div class="p-msg__send">
           <form action="" method="POST" class="js-message-form">
             <input type="hidden" name="bord_id" value="<?php echo $bord_id; ?>" class="js-id">
             <input type="hidden" name="send_user_name" value="<?php echo sanitize($myUserInfo['name']); ?>" class="js-user-name">
             <input type="hidden" name="to_user_id" value="<?php echo $partnerUserId; ?>" class="js-to-id">
             <input type="hidden" name="from_user_id" value="<?php echo $_SESSION['user_id']; ?>" class="js-from-id">
-            <input type="hidden" name="last_id" value="<?php echo isset($lastViewData) ? $lastViewData['m_id']: ''; ?>" class="js-last-id">
+            <input type="hidden" name="last_id" value="<?php echo isset($lastViewData) ? $lastViewData['m_id'] : ''; ?>" class="js-last-id">
             <input type="hidden" name="img" value="<?php echo showProfImg($myImg); ?>" class="js-user-img">
             <input type="hidden" name="partner-img" value="<?php echo showProfImg($partnerImg); ?>" class="js-partner-img">
             <textarea name="msg" cols="30" rows="3" class="js-count js-message-input"></textarea>
