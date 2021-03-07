@@ -16,8 +16,6 @@ require('auth.php');
 if (!empty($_POST)) {
   debug('POST送信があります。');
 
-  //サンプル
-
   //変数にユーザー情報を代入
   $email = $_POST['email'];
   $pass = $_POST['pass'];
