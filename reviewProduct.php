@@ -16,9 +16,9 @@ require('auth.php');
 // 画面表示用データ取得
 //================================
 
-$bord_id = !empty($_GET['bord_id']) ? $_GET['bord_id'] : '';
+$bordId = !empty($_GET['bord_id']) ? $_GET['bord_id'] : '';
 // DBから掲示板とメッセージデータを取得
-$bordData = getMsgsAndBord($bord_id, false);
+$bordData = getMsgsAndBord($bordId, false);
 debug('取得したDBデータ：' . print_r($bordData, true));
 // パラメータに不正な値が入っているかチェック
 if (empty($bordData)) {
@@ -45,7 +45,7 @@ if (!empty($_POST)) {
     validRequired($comment, 'comment');
     validMaxlen($comment, 'comment');
 
-    if (empty($err_msg)) {
+    if (empty($errMsg)) {
       debug('バリデーションOKです');
 
       try {
@@ -60,7 +60,7 @@ if (!empty($_POST)) {
           //出品者が取引完了している場合
           if ($bordData[0]['sell_flg']) {
             $sql2 = 'UPDATE bord SET complete_flg = 1 ,buy_flg = 1 WHERE id = :bord_id';
-            $data2 = array(':bord_id' => $bord_id);
+            $data2 = array(':bord_id' => $bordId);
 
             //例外処理
             try {
@@ -76,11 +76,11 @@ if (!empty($_POST)) {
             } catch (PDOException $e) {
               $dbh->rollback();
               error_log('エラー発生：' . $e->getMessage());
-              $err_msg['common'] = MSG07;
+              $errMsg['common'] = MSG07;
             }
           } else {
             $sql2 = 'UPDATE bord SET buy_flg = 1 WHERE id = :bord_id';
-            $data2 = array(':bord_id' => $bord_id);
+            $data2 = array(':bord_id' => $bordId);
 
             try {
               $dbh->beginTransaction();
@@ -95,7 +95,7 @@ if (!empty($_POST)) {
             } catch (PDOException $e) {
               $dbh->rollback();
               error_log('エラー発生：' . $e->getMessage());
-              $err_msg['common'] = MSG07;
+              $errMsg['common'] = MSG07;
             }
           }
         }
@@ -108,7 +108,7 @@ if (!empty($_POST)) {
           //購入者が取引完了している場合
           if ($bordData[0]['buy_flg']) {
             $sql2 = 'UPDATE bord SET complete_flg = 1 ,sell_flg = 1 WHERE id = :bord_id';
-            $data2 = array(':bord_id' => $bord_id);
+            $data2 = array(':bord_id' => $bordId);
 
             //例外処理
             try {
@@ -124,11 +124,11 @@ if (!empty($_POST)) {
             } catch (PDOException $e) {
               $dbh->rollback();
               error_log('エラー発生：' . $e->getMessage());
-              $err_msg['common'] = MSG07;
+              $errMsg['common'] = MSG07;
             }
           } else {
             $sql2 = 'UPDATE bord SET sell_flg = 1 WHERE id = :bord_id';
-            $data2 = array(':bord_id' => $bord_id);
+            $data2 = array(':bord_id' => $bordId);
 
             //例外処理
             try {
@@ -144,18 +144,18 @@ if (!empty($_POST)) {
             } catch (PDOException $e) {
               $dbh->rollback();
               error_log('エラー発生：' . $e->getMessage());
-              $err_msg['common'] = MSG07;
+              $errMsg['common'] = MSG07;
             }
           }
         }
       } catch (PDOException $e) {
         error_log('エラー発生：' . $e->getMessage());
-        $err_msg['common'] = MSG07;
+        $errMsg['common'] = MSG07;
       }
     }
   } else {
     $_SESSION['link'];
-    getCurrentLink('bord_id', $bord_id);
+    getCurrentLink('bord_id', $bordId);
   }
 }
 ?>
@@ -184,7 +184,7 @@ require('head.php');
           </div>
 
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['rate'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['rate'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>評価(星をクリックしてください)</div>
                 <div class="c-badge--required">必須</div>
@@ -205,7 +205,7 @@ require('head.php');
           </div>
 
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['comment'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['comment'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>詳細</div>
                 <div class="c-badge--required">必須</div>

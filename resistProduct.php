@@ -18,21 +18,21 @@ require('auth.php');
 // 画面表示用データ取得
 //================================
 // GETデータを格納
-$product_id = (!empty($_GET['product_id'])) ? (int)$_GET['product_id'] : '';
+$productId = (!empty($_GET['product_id'])) ? (int)$_GET['product_id'] : '';
 //DBから商品データを取得
-$dbFormData = (!empty($product_id)) ? getProduct($_SESSION['user_id'], $product_id) : '';
+$dbFormData = (!empty($productId)) ? getProduct($_SESSION['user_id'], $productId) : '';
 //新規登録画面か編集画面か判別用フラグ
-$edit_flg = (empty($dbFormData)) ? false : true;
+$editFlag = (empty($dbFormData)) ? false : true;
 //DBからカテゴリデータを取得
 $dbCategoryData = getCategory();
-debug('商品ID：' . $product_id);
+debug('商品ID：' . $productId);
 debug('フォーム用DBデータ：' . print_r($dbFormData, true));
 debug('カテゴリデータ：' . print_r($dbCategoryData, true));
 
 // パラメータ改ざんチェック
 //================================
 // GETパラメータはあるが、改ざんされている（URLをいじくった）場合、正しい商品データが取れないのでマイページへ遷移させる
-if (!empty($product_id) && empty($dbFormData)) {
+if (!empty($productId) && empty($dbFormData)) {
   debug('GETパラメータの商品IDが違います。マイページへ遷移します。');
   header("Location:mypage.php"); //マイページへ
 }
@@ -55,7 +55,7 @@ if (!empty($_POST)) {
   $category = $_POST['category'];
   $price = (!empty($_POST['price'])) ? $_POST['price'] : 0; //0や空文字の場合は0を入れる。デフォルトのフォームには0が入っている。
   $comment = $_POST['comment'];
-  $delete_flgs = $_POST['imgdelete'];
+  $deleteFlags = $_POST['imgdelete'];
 
   //productsテーブルの画像カラムにインサートする変数$pic1~3
   for ($i = 1; $i <= 3; $i++) {
@@ -63,7 +63,7 @@ if (!empty($_POST)) {
     $$pic = '';
     if (!empty($_FILES['pic' . $i]['name'])) {
       $$pic = uploadImg($_FILES['pic' . $i], "pic{$i}");
-    } elseif (empty($$pic) && !empty($dbFormData['pic' . $i]) && empty($delete_flgs['delete' . $i])) {
+    } elseif (empty($$pic) && !empty($dbFormData['pic' . $i]) && empty($deleteFlags['delete' . $i])) {
       $$pic = $dbFormData['pic' . $i];
     } else {
       $$pic = '';
@@ -115,7 +115,7 @@ if (!empty($_POST)) {
     }
   }
 
-  if (empty($err_msg)) {
+  if (empty($errMsg)) {
     debug('バリデーションOKです。');
 
     try {
@@ -123,10 +123,10 @@ if (!empty($_POST)) {
       $dbh = dbConnect();
       //SQL文作成
       //編集画面の場合はUPDATE文、新規登録画面の場合はINSERT文を生成
-      if ($edit_flg) {
+      if ($editFlag) {
         debug('DB更新です。');
         $sql = 'UPDATE products SET name = :name, category_id = :category, price = :price, comment = :comment, pic1 = :pic1, pic2 = :pic2, pic3 = :pic3 WHERE user_id = :user_id AND id = :product_id';
-        $data = array(':name' => $name, ':category' => $category, ':price' => $price, ':comment' => $comment, ':pic1' => $pic1, ':pic2' => $pic2, ':pic3' => $pic3, ':user_id' => $_SESSION['user_id'], ':product_id' => $product_id);
+        $data = array(':name' => $name, ':category' => $category, ':price' => $price, ':comment' => $comment, ':pic1' => $pic1, ':pic2' => $pic2, ':pic3' => $pic3, ':user_id' => $_SESSION['user_id'], ':product_id' => $productId);
       } else {
         debug('DB新規登録です。');
         $sql = 'insert into products (name, category_id, price, comment, pic1, pic2, pic3, user_id, create_date ) values (:name, :category, :price, :comment, :pic1, :pic2, :pic3, :user_id, :date)';
@@ -144,18 +144,18 @@ if (!empty($_POST)) {
         debug('マイページへ遷移します。');
         header("Location:mypage.php");
       } else {
-        header("Location:{resistProduct.php?product_id={$product_id}");
+        header("Location:{resistProduct.php?product_id={$productId}");
       }
     } catch (PDOException $e) {
       error_log('エラー発生：' . $e->getMessage());
-      $err_msg['common'] = MSG07;
+      $errMsg['common'] = MSG07;
     }
   }
 }
 debug('画面表示処理終了 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
 ?>
 <?php
-$siteTitle = (!$edit_flg) ? '商品登録' : '商品編集';
+$siteTitle = (!$editFlag) ? '商品登録' : '商品編集';
 require('head.php');
 ?>
 
@@ -174,7 +174,7 @@ require('head.php');
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['name'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['name'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>商品名</div>
                 <div class="c-badge--required">必須</div>
@@ -188,7 +188,7 @@ require('head.php');
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['category'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['category'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>カテゴリ</div>
                 <div class="c-badge--required">必須</div>
@@ -228,7 +228,7 @@ require('head.php');
           </div>
 
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['price'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['price'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>金額</div>
                 <div class="c-badge--required">必須</div>
@@ -242,7 +242,7 @@ require('head.php');
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['comment'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['comment'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>詳細</div>
                 <div class="c-badge--required">必須</div>
@@ -272,7 +272,7 @@ require('head.php');
           <div class="c-form__images">
             <div class="c-form__item">
 
-              <label class="c-form__heading <?php if (!empty($err_msg['pic1'])) echo 'is-error'; ?>" for="product-image1">
+              <label class="c-form__heading <?php if (!empty($errMsg['pic1'])) echo 'is-error'; ?>" for="product-image1">
                 画像を選択
                 <span class="triangle"></span>
                 <input id="product-image1" type="file" name="pic1" class="c-form__file js-file-input">
@@ -297,7 +297,7 @@ require('head.php');
 
             <div class="c-form__item">
 
-              <label class="c-form__heading <?php if (!empty($err_msg['pic2'])) echo 'is-error'; ?>" for="product-image2">
+              <label class="c-form__heading <?php if (!empty($errMsg['pic2'])) echo 'is-error'; ?>" for="product-image2">
                 <p>画像を選択</p>
                 <span class="triangle"></span>
                 <input id="product-image2" type="file" name="pic2" class="c-form__file js-file-input">
@@ -312,13 +312,13 @@ require('head.php');
               <input type="hidden" name="MAX_FILE_SIZE" value="3145728">
               <div class="c-form__msg">
                 <?php
-                if (!empty($err_msg['pic2'])) echo $err_msg['pic2'];
+                if (!empty($errMsg['pic2'])) echo $errMsg['pic2'];
                 ?>
               </div>
             </div>
             <div class="c-form__item">
 
-              <label class="c-form__heading <?php if (!empty($err_msg['pic3'])) echo 'is-error'; ?>" for="product-image3">
+              <label class="c-form__heading <?php if (!empty($errMsg['pic3'])) echo 'is-error'; ?>" for="product-image3">
                 <p>画像を選択</p>
                 <span class="triangle"></span>
                 <input id="product-image3" type="file" name="pic3" class="c-form__file js-file-input">
@@ -335,7 +335,7 @@ require('head.php');
               </div>
               <div class="c-form__msg">
                 <?php
-                if (!empty($err_msg['pic3'])) echo $err_msg['pic3'];
+                if (!empty($errMsg['pic3'])) echo $errMsg['pic3'];
                 ?>
               </div>
             </div>

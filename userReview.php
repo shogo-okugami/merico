@@ -15,12 +15,12 @@ require('auth.php');
 
 // 画面表示用データ取得
 //================================
-$user_id = $_SESSION['user_id'];
+$userId = $_SESSION['user_id'];
 //DBからユーザーデータを取得
-$userInfo = getUser($user_id);
-$rate = getAvgRate($user_id);
+$userInfo = getUser($userId);
+$rate = getAvgRate($userId);
 $rate = (float)$rate['avg_rate'];
-$viewData = getReviews($user_id);
+$viewData = getReviews($userId);
 
 ?>
 <?php

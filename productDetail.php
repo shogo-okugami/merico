@@ -14,19 +14,19 @@ debugLogStart();
 // 画面表示用データ取得
 //================================
 // 商品IDのGETパラメータを取得
-$product_id = (!empty($_GET['product_id'])) ? (int)$_GET['product_id'] : '';
+$productId = (!empty($_GET['product_id'])) ? (int)$_GET['product_id'] : '';
 // DBから商品データを取得
-$viewData = showProduct($product_id);
+$viewData = showProduct($productId);
 // パラメータに不正な値が入っているかチェック
 if (empty($viewData)) {
   error_log('エラー発生:指定ページに不正な値が入りました');
   header("Location:index.php"); //トップページへ
 }
-//DBからクリエイター情報を取得
-$createrInfo = getUser($viewData['user_id']);
-$seller_id = (int)$createrInfo['id'];
+//DBからユーザー情報を取得
+$userInfo = getUser($viewData['user_id']);
+$sellerId = (int)$userInfo['id'];
 debug('取得した商品データ：' . print_r($viewData, true));
-debug('取得したクリエイターデータ：' . print_r($createrInfo, true));
+debug('取得したユーザーデータ：' . print_r($userInfo, true));
 //POST送信されていた場合
 if (!empty($_POST)) {
   debug('POST送信があります。');
@@ -42,8 +42,8 @@ if (!empty($_POST)) {
         //SQL文作成
         $sql1 = 'INSERT INTO bord (seller_id, buyer_id, product_id, create_date) VALUES (:seller_id, :buyer_id, :product_id, :date)';
         $sql2 = 'UPDATE products SET search_flg = 1 WHERE id = :product_id';
-        $data1 = array(':seller_id' => $viewData['user_id'], ':buyer_id' => $_SESSION['user_id'], ':product_id' => $product_id, ':date' => date('Y-m-d H:i:s'));
-        $data2 = array(':product_id' => $product_id);
+        $data1 = array(':seller_id' => $viewData['user_id'], ':buyer_id' => $_SESSION['user_id'], ':product_id' => $productId, ':date' => date('Y-m-d H:i:s'));
+        $data2 = array(':product_id' => $productId);
         //クエリ実行
         try {
           $dbh->beginTransaction();
@@ -66,7 +66,7 @@ if (!empty($_POST)) {
       if (!empty($_POST['delete'])) {
         //SQL文作成
         $sql = 'UPDATE products SET delete_flg = 1 WHERE user_id = :user_id AND id = :product_id';
-        $data = array(':user_id' => $viewData['user_id'], ':product_id' => $product_id);
+        $data = array(':user_id' => $viewData['user_id'], ':product_id' => $productId);
         //クエリ実行
         $stmt = execute($dbh, $sql, $data);
         if ($stmt) {
@@ -80,7 +80,7 @@ if (!empty($_POST)) {
     }
   } else {
     $_SESSION['link'];
-    getCurrentLink('product_id', $product_id);
+    getCurrentLink('product_id', $productId);
   }
 }
 debug('画面表示処理終了 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
@@ -176,7 +176,7 @@ require('head.php');
             </div>
           <?php endif; ?>
           <div class="p-product__seller">
-            <a href="userDetail.php?user_id=<?php echo sanitize($seller_id); ?>" class="u-extendLink"><?php echo sanitize($createrInfo['name']); ?>さんが出品しました</a>
+            <a href="userDetail.php?user_id=<?php echo sanitize($sellerId); ?>" class="u-extendLink"><?php echo sanitize($userInfo['name']); ?>さんが出品しました</a>
           </div>
           <div>
             <p class="p-product__comment"><?php echo sanitize($viewData['comment']) ?></p>

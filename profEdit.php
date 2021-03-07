@@ -52,7 +52,7 @@ if (!empty($_POST)) {
     validEmail($email, 'email');
     //emaiの未入力チェック
     validRequired($email, 'email');
-    if (empty($err_msg['email'])) {
+    if (empty($errMsg['email'])) {
       //emailの形式チェック
       validEmailDup($email, 'email');
     }
@@ -61,7 +61,7 @@ if (!empty($_POST)) {
     validMaxLen($comment, 'comment', 500);
   }
 
-  if (empty($err_msg)) {
+  if (empty($errMsg)) {
     debug('バリデーションがOKです。');
 
     try {
@@ -84,7 +84,7 @@ if (!empty($_POST)) {
       }
     } catch (PDOException $e) {
       error_log('エラー発生：' . $e->getMessage());
-      $err_msg['common'] = MSG07;
+      $errMsg['common'] = MSG07;
     }
   }
 }
@@ -108,11 +108,11 @@ require('head.php');
           <input type="hidden" name="token" value="<?php echo $token; ?>">
           <div class="c-form__msg">
             <?php
-            if (!empty($err_msg['common'])) echo $err_msg['common'];
+            if (!empty($errMsg['common'])) echo $errMsg['common'];
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['name'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['name'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>名前</div>
                 <div class="c-badge--required">必須</div>
@@ -122,11 +122,11 @@ require('head.php');
           </div>
           <div class="c-form__msg">
             <?php
-            if (!empty($err_msg['name'])) echo $err_msg['name'];
+            if (!empty($errMsg['name'])) echo $errMsg['name'];
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['email'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['email'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>email</div>
                 <div class="c-badge--required">必須</div>
@@ -136,11 +136,11 @@ require('head.php');
           </div>
           <div class="c-form__msg">
             <?php
-            if (!empty($err_msg['email'])) echo $err_msg['email'];
+            if (!empty($errMsg['email'])) echo $errMsg['email'];
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['comment'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['comment'])) echo 'is-error'; ?>">
               <div class="c-form__text">コメント</div>
               <textarea name="comment" class="c-form__input js-count" cols="30" rows="10"><?php echo getFormData('comment'); ?></textarea>
               <p class="c-form__counter">
@@ -161,11 +161,11 @@ require('head.php');
           </div>
           <div class="c-form__msg">
             <?php
-            if (!empty($err_msg['comment'])) echo $err_msg['comment'];
+            if (!empty($errMsg['comment'])) echo $errMsg['comment'];
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__heading <?php if (!empty($err_msg['pic'])) echo 'is-error'; ?>">
+            <label class="c-form__heading <?php if (!empty($errMsg['pic'])) echo 'is-error'; ?>">
               <p>プロフィール画像を選択</p>
               <span class="triangle--large"></span>
               <input type="file" name="pic" class="c-form__file js-file-input">
@@ -181,7 +181,7 @@ require('head.php');
           </div>
           <div class="c-form__msg">
             <?php
-            if (!empty($err_msg['pic'])) echo $err_msg['pic'];
+            if (!empty($errMsg['pic'])) echo $errMsg['pic'];
             ?>
           </div>
           <div class="c-form__item">

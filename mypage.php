@@ -15,17 +15,17 @@ require('auth.php');
 
 // 画面表示用データ取得
 //================================
-$user_id = $_SESSION['user_id'];
+$userId = $_SESSION['user_id'];
 //DBからユーザーデータを取得
-$userInfo = getUser($user_id);
+$userInfo = getUser($userId);
 //DBから商品データを取得
 if ((int)$userInfo['role']  === 2) {
-  $productData = getMyProduct($user_id);
+  $productData = getMyProduct($userId);
 }
 //DBから連絡掲示板データを取得
-$bordData = getMyProductAndBord($user_id);
+$bordData = getMyProductAndBord($userId);
 //DBからお気に入りデータを取得
-$likeData = getMyLike($user_id);
+$likeData = getMyLike($userId);
 
 debug('画面表示処理終了 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
 ?>

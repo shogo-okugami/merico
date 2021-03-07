@@ -39,7 +39,7 @@ try {
     } catch (Exception $e) {
       $dbh->rollBack();
       error_log('エラー発生：' . $e->getMessage());
-      $err_msg['common'] = MSG07;
+      $errMsg['common'] = MSG07;
     }
   } else {
     $_SESSION['msg_warning'] = MSG18;
@@ -47,5 +47,5 @@ try {
   }
 } catch (PDOException $e) {
   error_log('エラー発生：' . $e->getMessage());
-  $err_msg['common'] = MSG07;
+  $errMsg['common'] = MSG07;
 }

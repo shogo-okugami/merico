@@ -21,9 +21,9 @@ $productInfo = '';
 // 画面表示用データ取得
 //================================
 // GETパラメータを取得
-$bord_id = (!empty($_GET['bord_id'])) ? (int)$_GET['bord_id'] : '';
+$bordId = (!empty($_GET['bord_id'])) ? (int)$_GET['bord_id'] : '';
 // DBから掲示板とメッセージデータを取得
-$viewData = getMsgsAndBord($bord_id);
+$viewData = getMsgsAndBord($bordId);
 debug('取得したDBデータ：' . print_r($viewData, true));
 // パラメータに不正な値が入っているかチェック
 if (empty($viewData)) {
@@ -105,7 +105,7 @@ require('head.php');
             //購入者（ユーザー）が取引を完了していない場合
             if (!$viewData[0]['buy_flg']) {
           ?>
-              <div><a href="reviewProduct.php?bord_id=<?php echo sanitize($bord_id); ?>" class="c-btn--primary c-form__input">取引を完了する</a></div>
+              <div><a href="reviewProduct.php?bord_id=<?php echo sanitize($bordId); ?>" class="c-btn--primary c-form__input">取引を完了する</a></div>
             <?php
               //完了している場合
             } else {
@@ -126,7 +126,7 @@ require('head.php');
             //出品者（ユーザー）が取引を完了していない場合
             if (!$viewData[0]['sell_flg']) {
           ?>
-              <div><a href="reviewProduct.php?bord_id=<?php echo sanitize($bord_id); ?>" class="c-btn--primary c-form__input">取引を完了する</a></div>
+              <div><a href="reviewProduct.php?bord_id=<?php echo sanitize($bordId); ?>" class="c-btn--primary c-form__input">取引を完了する</a></div>
             <?php
               //完了している場合
             } else {
@@ -190,7 +190,7 @@ require('head.php');
 
         <div class="p-msg__send">
           <form action="" method="POST" class="js-message-form">
-            <input type="hidden" name="bord_id" value="<?php echo $bord_id; ?>" class="js-id">
+            <input type="hidden" name="bord_id" value="<?php echo $bordId; ?>" class="js-id">
             <input type="hidden" name="send_user_name" value="<?php echo sanitize($myUserInfo['name']); ?>" class="js-user-name">
             <input type="hidden" name="to_user_id" value="<?php echo $partnerUserId; ?>" class="js-to-id">
             <input type="hidden" name="from_user_id" value="<?php echo $_SESSION['user_id']; ?>" class="js-from-id">

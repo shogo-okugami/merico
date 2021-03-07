@@ -21,7 +21,7 @@ if (!empty($_POST)) {
   $email = $_POST['email'];
   $pass = $_POST['pass'];
 
-  $pass_save = (!empty($_POST['pass_save'])) ? true : false;
+  $passSave = (!empty($_POST['pass_save'])) ? true : false;
 
   //emailの形式チェック
   validEmail($email, 'email');
@@ -40,7 +40,7 @@ if (!empty($_POST)) {
   validRequired($pass, 'pass');
 
 
-  if (empty($err_msg)) {
+  if (empty($errMsg)) {
     debug('バリデーションOKです。');
 
     try {
@@ -66,7 +66,7 @@ if (!empty($_POST)) {
         $_SESSION['login_date'] = time();
 
         //ログイン保持にチェックがある場合
-        if ($pass_save) {
+        if ($passSave) {
           debug('ログイン保持にチェックがあります。');
           //ログイン有効期限を30日にしてセット
           $_SESSION['login_limit'] = $sesLimit * 24 * 30;
@@ -86,11 +86,11 @@ if (!empty($_POST)) {
         }
       } else {
         debug('パスワードがアンマッチです。');
-        $err_msg['common'] = MSG09;
+        $errMsg['common'] = MSG09;
       }
     } catch (PDOException $e) {
       error_log('エラー発生：' . $e->getMessage());
-      $err_msg['common'] = MSG07;
+      $errMsg['common'] = MSG07;
     }
   }
 }
@@ -118,7 +118,7 @@ require('head.php');
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['email'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['email'])) echo 'is-error'; ?>">
               <div class="c-form__text">Eメール</div>
               <input type="text" name="email" class="c-form__input" value="<?php if (!empty($_POST['email'])) echo $_POST['email']; ?>">
             </label>
@@ -129,7 +129,7 @@ require('head.php');
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['pass'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['pass'])) echo 'is-error'; ?>">
               <div class="c-form__text">パスワード</div>
               <input type="password" name="pass" class="c-form__input" value="<?php if (!empty($_POST['pass'])) echo $_POST['pass']; ?>">
             </label>

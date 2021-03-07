@@ -14,11 +14,11 @@ debugLogStart();
 // 画面表示用データ取得
 //================================
 // 商品IDのGETパラメータを取得
-$user_id = (!empty($_GET['user_id'])) ? $_GET['user_id'] : '';
+$userId = (!empty($_GET['user_id'])) ? $_GET['user_id'] : '';
 // DBからユーザーデータを取得
-$userInfo = getUser($user_id);
+$userInfo = getUser($userId);
 //DBから商品データを取得
-$productData = getMyProduct($user_id);
+$productData = getMyProduct($userId);
 
 // パラメータに不正な値が入っているかチェック
 if (empty($userInfo)) {

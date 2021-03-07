@@ -19,15 +19,15 @@ if (!empty($_POST)) {
   $email = $_POST['email'];
   $name = $_POST['name'];
   $pass = $_POST['pass'];
-  $pass_re = $_POST['pass_re'];
+  $rePass = $_POST['pass_re'];
 
   //未入力チェック
   validRequired($email, 'email');
   validRequired($name, 'name');
   validRequired($pass, 'pass');
-  validRequired($pass_re, 'pass_re');
+  validRequired($rePass, 'pass_re');
 
-  if (empty($err_msg)) {
+  if (empty($errMsg)) {
 
     //emailの形式チェック
     validEmail($email, 'email');
@@ -45,13 +45,13 @@ if (!empty($_POST)) {
     validMinLen($pass, 'pass');
 
     //パスワード（再入力）の最大文字数チェック
-    validMaxLen($pass_re, 'pass_re');
+    validMaxLen($rePass, 'pass_re');
     //パスワード（再入力）の最小文字数チェック
-    validMinLen($pass_re, 'pass_re');
+    validMinLen($rePass, 'pass_re');
     //パスワードとパスワード再入力が合っているかチェック
-    validMatch($pass, $pass_re, 'pass_re');
+    validMatch($pass, $rePass, 'pass_re');
 
-    if (empty($err_msg)) {
+    if (empty($errMsg)) {
 
       try {
         //DBへ接続
@@ -82,7 +82,7 @@ if (!empty($_POST)) {
         }
       } catch (PDOException $e) {
         error_log('エラー発生：' . $e->getMessage());
-        $err_msg['common'] = MSG07;
+        $errMsg['common'] = MSG07;
       }
     }
   }
@@ -109,7 +109,7 @@ require('head.php');
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['email'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['email'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>Eメール</div>
                 <div class="c-badge--required">必須</div>
@@ -123,7 +123,7 @@ require('head.php');
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['name'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['name'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>ユーザー名</div>
                 <div class="c-badge--required">必須</div>
@@ -137,7 +137,7 @@ require('head.php');
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['pass'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['pass'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>パスワード</div>
                 <div class="c-badge--required">必須</div>
@@ -151,7 +151,7 @@ require('head.php');
             ?>
           </div>
           <div class="c-form__item">
-            <label class="c-form__label <?php if (!empty($err_msg['pass_re'])) echo 'is-error'; ?>">
+            <label class="c-form__label <?php if (!empty($errMsg['pass_re'])) echo 'is-error'; ?>">
               <div class="c-form__text">
                 <div>パスワード(確認)</div>
                 <div class="c-badge--required">必須</div>
