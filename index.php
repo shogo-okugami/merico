@@ -21,6 +21,8 @@ debugLogStart();
 $currentPageNum = (!empty($_GET['page'])) ? $_GET['page'] : 1; //デフォルトは１ページ
 //カテゴリー
 $category = (!empty($_GET['category'])) ? $_GET['category'] : 0;
+//サブカテゴリー
+$subCategory = (!empty($_GET['sub_category'])) ? $_GET['sub_category'] : 0;
 //ソート順
 $sort = (!empty($_GET['sort'])) ? $_GET['sort'] : 0;
 //検索ワード
@@ -36,10 +38,11 @@ $listSpan = 20;
 //現在の表示レコード先頭を算出
 $currentMinNum = (($currentPageNum - 1) * $listSpan); //１ページ目なら(1-1):20 = 0、２ページ目なら(2-1)*20 = 20
 //DBから商品データを取得
-$dbProductData = getProductList($currentMinNum, $category, $sort, $word);
+$dbProductData = getProductList($currentMinNum, $category, $subCategory, $sort, $word);
 //DBからカテゴリデータを取得
 $dbCategoryData = getCategory();
-
+$dbSubCategoryData = getSubCategory();
+debug('カテゴリーデータ:' . print_r($dbSubCategoryData, true));
 $dbSortData = getSort();
 
 debug('画面表示処理終了 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
@@ -57,38 +60,24 @@ require('head.php');
   <main>
     <section class="p-index">
       <section class="p-index__sidebar">
-        <form class="p-index__search" name="" method="get">
-          <input type="hidden" class="js-word-value" name="word" value="<?php echo getFormData('word', true); ?>">
-          <div class="p-select-box js-select-form">
-            <div class="p-select-heading js-select-heading"><?php echo $category ? $dbCategoryData[$category - 1]['name'] : 'カテゴリを選択'; ?></div>
-            <ul class="p-select-list js-select-list">
-            <li data-category="0" class="p-select-option js-select-option js-category-option">カテゴリを選択</li>
+        <?php
+        foreach ($dbCategoryData as $id => $val) {
+        ?>
+          <div data-category="<?php echo $id; ?>" class="p-select-box js-list"><?php echo $val['name']; ?>
+            <ul class="p-select-list js-menu">
+            <li class="p-select-option"><a href=<?php echo "index.php?category=" . $id; ?>>すべての<?php echo $val['name']; ?></a></li>
               <?php
-              foreach ($dbCategoryData as $key => $val) {
+              foreach ($dbSubCategoryData[$id] as $key => $val) {
               ?>
-                <li data-category="<?php echo $val['id']; ?>" class="p-select-option js-select-option js-category-option"><?php echo $val['name']; ?></li>
-              <?php
-              }
-              ?>
-            </ul>
-            <input type="text" name="category" value="<?php echo $category; ?>" class="c-form__input--hidden js-selected-value">
-          </div>
-          <div class="p-select-box js-select-form">
-            <div class="p-select-heading js-select-heading"><?php echo $sort ? $dbSortData[$sort - 1]['name'] : '表示順を選択'; ?></div>
-            <ul class="p-select-list js-select-list">
-            <li data-category="0" class="p-select-option js-select-option js-sort-option">表示順を選択</li>
-              <?php
-              foreach ($dbSortData as $key => $val) {
-              ?>
-                <li data-sort="<?php echo $val['id']; ?>" class="p-select-option js-select-option js-sort-option"><?php echo $val['name']; ?></li>
+                <li class="p-select-option"><a href=<?php echo "index.php?sub_category=" . $val['id']; ?>><?php echo $val['name']; ?></a></li>
               <?php
               }
               ?>
             </ul>
-            <input type="text" name="sort" value="<?php echo $sort; ?>" class="c-form__input--hidden js-selected-value">
           </div>
-          <input type="submit" class="c-btn--submit" value="検索">
-        </form>
+        <?php
+        }
+        ?>
       </section>
       <section class="p-index__main">
         <div class="p-index__result">
@@ -118,11 +107,12 @@ require('head.php');
           ?>
         </div>
 
-        <?php pagination($currentPageNum, $dbProductData['total_page'],$_GET); ?>
+        <?php pagination($currentPageNum, $dbProductData['total_page'], $_GET); ?>
 
       </section>
     </section>
   </main>
+  <script type="text/javascript" src="js/categoryOption.js"></script>
   <?php
   require('footer.php');
   ?>
