@@ -471,12 +471,13 @@ function getProduct(int $userId, int $productId)
  * 
  * @param int $currentMinNum レコードの取得開始位置
  * @param int $category 
+ * @param int $subCategory
  * @param int $sort 
  * @param string $word
  * 
  * @return array
  */
-function getProductList($currentMinNum = 1, int $category, int $sort, string $word, int $span = 20)
+function getProductList($currentMinNum = 1, int $category, int $subCategory , int $sort, string $word, int $span = 20)
 {
   debug('商品情報を取得します。');
 
@@ -490,6 +491,10 @@ function getProductList($currentMinNum = 1, int $category, int $sort, string $wo
     if (!empty($category)) {
       array_push($where, "category_id = :category_id");
       $data += array(':category_id' => $category);
+    }
+    if(!empty($subCategory)) {
+      array_push($where, "sub_category_id = :sub_category_id");
+      $data += array(':sub_category_id' => $subCategory);
     }
     if (!empty($sort)) {
       switch ($sort) {
@@ -804,7 +809,7 @@ function getCategory()
 
     if ($stmt) {
       //クエリ結果の全データを返却
-      return $stmt->fetchAll();
+      return $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_UNIQUE);
     } else {
       return false;
     }
@@ -813,6 +818,35 @@ function getCategory()
     $errMsg['common'] = MSG07;
   }
 }
+/** 
+ * サブカテゴリー情報を取得します。
+ * 
+ * @return array
+ */
+function getSubCategory()
+{
+
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    $sql = 'SELECT category_id, id, name FROM sub_categories';
+    $data = array();
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
+
+    if ($stmt) {
+      //クエリ結果の全データを返却
+      return $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $errMsg['common'] = MSG07;
+  }
+}
+
 /**
  *ソート順をDBから取得します
  * 
@@ -1152,3 +1186,16 @@ function checkToken()
   }
   $_SESSION['token'] = $token;
 }
+
+/*
+   <div class="p-select-heading js-select-heading"><?php echo $sort ? $dbSortData[$sort - 1]['name'] : '表示順を選択'; ?></div>
+          <ul class="p-select-list js-select-list">
+            <li data-category="0" class="p-select-option js-select-option js-sort-option">表示順を選択</li>
+            <?php
+            foreach ($dbSortData as $key => $val) {
+            ?>
+              <li data-sort="<?php echo $val['id']; ?>" class="p-select-option js-select-option js-sort-option"><?php echo $val['name']; ?></li>
+            <?php
+            }
+            ?>
+          </ul>*/
