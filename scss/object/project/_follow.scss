@@ -1,0 +1,29 @@
+.p-follow {
+  width: 980px;
+  margin: 0 auto;
+  padding: 80px 0;
+  &__body {
+    padding: 40px;
+    background: #fff;
+  }
+  &__item {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0;
+    border-bottom : 1px solid #ccc;
+    align-items: center;
+  }
+  &__btn {
+    width: 15%;
+    color : $color_green;
+    border: 1px solid $color_green;
+    padding: 5px 0;
+    border-radius: 5px;
+    outline: 0;
+    &.is-followed {
+      @extend .p-follow__btn;
+      color : #fff;
+      background: $color_green;
+    }
+  }
+}
