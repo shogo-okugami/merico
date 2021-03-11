@@ -6,25 +6,45 @@
   width: 1200px;
   margin: 0 auto;
   &__sidebar {
-    text-align: center;
     width: 25%;
     height: 100%;
     background: #fff;
   }
   &__menu {
-    padding: 15px;
+    border: 1px solid #ccc;
+    border-bottom: none;
   }
   &__link {
     display: block;
-    padding: 15px;
     color: #444;
+    border-bottom: 1px solid #ccc;
+    position : relative;
+    &:after {
+      position: absolute;
+      content: url(../img/nav-right.svg);
+      right : 5%;
+      bottom : 30%;
+    }
+    &:nth-last-of-type() {
+      border-bottom: none;
+    }
+    &:hover {
+      background: rgba(#a0a0a0, 0.2);
+    }
+    & a{
+      display: block;
+      color : #444;
+      padding : 15px;
+    }
   }
   &__main {
     background: #fff;
     width: 70%;
+    border: 1px solid #ccc;
   }
   &__contents {
     padding: $space_l;
+    min-height: 850px;
   }
   &__img {
     width: 50%;

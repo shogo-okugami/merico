@@ -11,10 +11,10 @@
     font-size: $font-size_3l;
   }
   &__body {
-    //text-align: center;
     background: #fff;
     min-height: 400px;
     padding: $space_3l;
+    border: 1px solid #ccc;
   }
   &__heading {
     text-align: center;

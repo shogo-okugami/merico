@@ -4,45 +4,45 @@
   display: flex;
   margin: 0 auto;
   justify-content: space-between;
-  min-height: 700px;
+  min-height: 1500px;
   width: 1200px;
   padding: $space_3l * 2 0 0;
   &__sidebar {
     background: #fff;
     width: 20%;
     height: 225px;
-  }
-  & .p-select-box {
-    display: block;
-    padding-bottom : 10px;
-    border-bottom: 1px solid #a0a0a0;
-    position : relative;
-    cursor: pointer;
-    &:nth-child(1) {
-      margin-bottom: 40px;
-    }
-    &:after{
-      position : absolute;
-      content: url(../img/nav-down.svg);
-      width : 5%;
-      height : 5%;
-      left : 90%;
-      top : 0;
-    }
-  }
-  & .p-select-list {
-    display: none;
-  }
-  & .p-select-option {
-    padding: 15px 0;
-    border-bottom : 1px solid #a0a0a0;
-    cursor : pointer;
-    & a {
+    & .p-select-box {
       display: block;
-      color : #444;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #a0a0a0;
+      position: relative;
+      cursor: pointer;
+      &:nth-child(1) {
+        margin-bottom: 40px;
+      }
+      &:after {
+        position: absolute;
+        content: url(../img/nav-down.svg);
+        width: 5%;
+        height: 5%;
+        left: 90%;
+        top: 0;
+      }
     }
-    &:hover{
-      background : rgba(#a0a0a0,0.2);
+    & .p-select-list {
+      display: none;
+    }
+    & .p-select-option {
+      border-bottom: 1px solid #a0a0a0;
+      cursor: pointer;
+      & a {
+        padding: 15px 0;
+        display: block;
+        color: #444;
+      }
+      &:hover {
+        background: rgba(#a0a0a0, 0.2);
+      }
     }
   }
   &__main {
@@ -51,9 +51,34 @@
   &__result {
     display: flex;
     justify-content: space-between;
-    background: $color_green;
-    color: #fff;
-    padding: $space_m;
+    border-bottom: 1px solid #a0a0a0;
+    padding-bottom: $space_m;
+    margin: 0 15px;
+    & .p-select-box {
+      position: relative;
+      cursor: pointer;
+    }
+    & .p-select-list {
+      display: none;
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 1;
+      background: #fff;
+      width: 176px;
+      box-shadow: 0 0 4px #a0a0a0;
+    }
+    & .p-select-option {
+      padding: 10px;
+      cursor: pointer;
+      & a {
+        display: block;
+        color: #444;
+      }
+      &:hover {
+        background: rgba(#a0a0a0, 0.2);
+      }
+    }
   }
   &__list {
     display: flex;
@@ -61,5 +86,32 @@
     margin-right: -$space_l;
     width: 100%;
     padding: $space_3l 0px $space_3l $space_l;
+  }
+  &__heading {
+    color: $color_green;
+    border-bottom: 1px solid #a0a0a0;
+    font-size: 28px;
+    margin: 0 15px;
+    padding-bottom: $space_s;
+  }
+  &__btn {
+    width: 20%;
+    margin: 0 auto;
+    margin-top: $space_3l;
+    border: 1px solid $color_green;
+    outline: 0;
+    font-size: 20px;
+    & a {
+      display: block;
+      color: $color_green;
+      padding: 5px 0;
+    }
+    &:hover {
+      color: #fff;
+      background: $color_green;
+      & a {
+        color : #fff;
+      }
+    }
   }
 }

@@ -121,14 +121,9 @@
     }
     & .p-select-box {
       border: 1px solid $color_green;
-      color: $color_green;
     }
     & .p-select-heading {
       padding: 10px;
-      &:hover {
-        background: $color_green;
-        color: #fff;
-      }
     }
     & .p-select-list {
       display: none;
@@ -136,8 +131,7 @@
     & .p-select-option {
       padding: 10px;
       &:hover {
-        background: $color_green;
-        color: #fff;
+        background: rgba(#a0a0a0, 0.2);
       }
     }
   }

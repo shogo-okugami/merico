@@ -3,6 +3,7 @@
   width: 40%;
   background: #fff;
   padding: 20px 30px 40px;
+  border: 1px solid #ccc;
   &__label {
     &.is-error {
       & .c-form__input {
@@ -35,5 +36,12 @@
   }
   &__counter {
     text-align: right;
+  }
+  &__link {
+    margin-top: $space_l;
+    padding : 0 15px;
+    & a {
+      color: $color_green;
+    }
   }
 }

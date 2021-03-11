@@ -6,15 +6,23 @@
     @include btn;
     color: #fff;
     background: $color_green;
+    &.is-large {
+      width: 100%;
+      padding: 10px;
+      outline: none;
+      border-radius: 5px;
+    }
   }
   &--submit {
     @include btn;
     color: #fff;
     background: $color_green;
-    //border: 1px #444 solid;
     width: 100%;
     padding: 10px;
     outline: none;
+    border-radius: 0;
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
   }
   &--large {
     padding: 15px 30px;
@@ -30,5 +38,10 @@
     color: #fff;
     background: #c0c0c0;
     width: 45%;
+  }
+  &--login {
+    color : #444;
+    letter-spacing: 1px;
+    padding : 10px;
   }
 }

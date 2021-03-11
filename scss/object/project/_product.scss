@@ -1,10 +1,10 @@
 .p-product {
   width: $site-width;
-  padding: $space_3l 0;
+  padding: $space_3l * 2 0 $space_3l;
   margin: 0 auto;
   &__info {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
   }
   &__view {
     width: 50%;
@@ -16,13 +16,15 @@
   &__image {
     margin-bottom: $space_xxl;
     & img {
-      width: 400px;
       height: 400px;
     }
   }
   &__images {
     margin-top: $space_xxl;
     overflow: hidden;
+    & p {
+      padding-bottom: $space_m;
+    }
     & img {
       float: left;
       width: 100px;
@@ -30,37 +32,52 @@
     }
   }
   &__name {
-    margin-top: $space_xl;
+    margin-top: $space_3l;
     font-size: $font-size_3l;
   }
   &__price {
-    margin-top: $space_xl;
+    margin-top: $space_xxl;
     font-size: $space_3l;
   }
   &__comment {
-    padding: $space_l;
-    background: #eee;
-    margin-top: $space_3l * 2;
+    margin-top: $space_3l;
     min-height: 100px;
+    &__heading {
+      border-bottom: 1px solid #ccc;
+      padding-bottom: $space_m;
+    }
+    &__inner {
+      margin-top: $space_l;
+      line-height: 1.8;
+    }
   }
   &__seller {
-    margin-top: $space_xl;
+    margin-top: $space_3l;
     position: relative;
     & a {
       color: $color_green;
     }
   }
   &__fav {
-    margin-top: $space_xl;
+    margin-top: $space_xxl;
     & span {
       font-size: $font-size_xl;
     }
   }
   & .c-btn--primary {
-    margin-top: $space_xl;
+    margin-top: $space_3l;
     width: 100%;
     padding: $space_m;
     font-size: $font-size_xl;
+  }
+  & .c-btn--submit {
+    @include btn;
+    color: #fff;
+    background: $color_green;
+    width: 100%;
+    padding: 10px;
+    outline: none;
+    border-radius: 5px;
   }
   &__editor {
     position: absolute;
