@@ -7,5 +7,6 @@
 * jquery
 * scss
 * Mysql
-## 
+## URL
+## アプリ機能
 
