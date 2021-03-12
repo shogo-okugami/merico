@@ -10,7 +10,8 @@
 * Mysql
 ## URL
 http://merico.hacca.jp/  
-以下でメールアドレスとパスワードでログインできます。  
-
+以下でメールアドレスとパスワードでログインできます。 
+* sample01@gmail.com sample1234(一般ユーザー)  
+* sample02@gmail.com sample5678(生産者
 ## アプリ機能
 
