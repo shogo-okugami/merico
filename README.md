@@ -12,6 +12,6 @@
 http://merico.hacca.jp/  
 以下でメールアドレスとパスワードでログインできます。 
 * email:sample01@gmail.com password:sample1234(一般ユーザー)  
-* email:sample02@gmail.com password:sample5678(生産者
+* email:sample02@gmail.com password:sample5678(生産者)
 ## アプリ機能
 
