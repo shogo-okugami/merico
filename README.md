@@ -9,6 +9,8 @@
 * scss
 * Mysql
 ## URL
-http://merico.hacca.jp/
+http://merico.hacca.jp/  
+以下でメールアドレスとパスワードでログインできます。  
+
 ## アプリ機能
 
