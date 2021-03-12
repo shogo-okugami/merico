@@ -8,5 +8,6 @@
 * scss
 * Mysql
 ## URL
+http://merico.hacca.jp/
 ## アプリ機能
 
