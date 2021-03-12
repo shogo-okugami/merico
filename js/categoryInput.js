@@ -14,9 +14,6 @@ $(function () {
     })
   })
 
-  //input[name=category]の値を取得
-  var categoryInput = $('.js-category-value').val();
-  //$('.js-category-option').eq(categoryInput).css('display', 'none');
   $('.js-category-option').on('click', function () {
 
     $categoryList.css('display', 'none');
@@ -30,15 +27,9 @@ $(function () {
     $('.js-subcategory-list').eq(index).css('display', 'block').addClass('is-show');
   })
 
-  //input[name=sub_category]の値を取得
-  var subCategoryInput = $('.js-subcategory-value').val();
-
   $('.js-subcategory-option').on('click', function () {
     //クリックされたサブカテゴリーのIDを取得
     var subCategoryId = $(this).data('subcategory');
-    //非表示のサブカテゴリーを表示
-    //var prevInput = $('.js-subcategory-value').val();
-    //$(`.js-subcategory-option[data-subcategory="${prevInput}"]`).css('display', 'block');
     //サブカテゴリーのIDを対応するinputにセット
     $('.js-subcategory-value').val(subCategoryId);
 
