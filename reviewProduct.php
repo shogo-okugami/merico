@@ -236,7 +236,8 @@ require('head.php');
       </section>
     </div>
   </main>
-  <script type="text/javascript" src="js/rateHandle.js"></script>
+  <script type="text/javascript" src="js/rateInput.js"></script>
+  <script type="text/javascript" src="js/textCount.js"></script>
   <?php
   require('footer.php');
   ?>
