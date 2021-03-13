@@ -21,7 +21,7 @@ $userInfo = getUser($userId);
 $rate = getAvgRate($userId);
 $rate = (float)$rate['avg_rate'];
 $viewData = getReviews($userId);
-
+debug('評価' . print_r($viewData, true))
 ?>
 <?php
 $siteTitle = '評価一覧';
@@ -38,7 +38,7 @@ require('header.php');
       <div class="c-container">
         <div class="c-container__body">
           <div class="c-container__heading"><?php echo $userInfo['name']; ?>さんの評価
-            <?php if (!isset($viewData)) : ?>
+            <?php if (!isset($viewData[0])) : ?>
               <p class="c-container__text--passive">評価はまだありません。</p>
             <?php else : ?>
               <p><span class="star5_rating" data-rate="<?php echo setRate($rate); ?>"></span><span class="u-ml15"><?php echo $rate; ?></span></p>

@@ -205,7 +205,9 @@ require('head.php');
       </div>
     </div>
   </main>
-  <script type="text/javascript" src="js/message.js"></script>
+  <script type="text/javascript" src="js/messageInput.js"></script>
+  <script type="text/javascript" src="js/showMessage.js"></script>
+  <script type="text/javascript" src="js/textCount.js"></script>
   <?php
   require('footer.php');
   ?>
