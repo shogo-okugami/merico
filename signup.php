@@ -165,7 +165,7 @@ require('head.php');
             ?>
           </div>
           <div class="c-form__item">
-            <input type="submit" class="c-btn--submit" value="ユーザー登録">
+            <input type="submit" class="c-btn--primary is-large" value="ユーザー登録">
           </div>
         </form>
       </section>
