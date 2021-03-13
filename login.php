@@ -143,8 +143,11 @@ require('head.php');
               <input type="checkbox" name="pass_save">次回ログインを省略する
             </label>
           </div>
+          <div class="c-form__link">
+            <a href="signup.php">新規登録はこちら</a>
+          </div>
           <div class="c-form__item">
-            <input type="submit" class="c-btn--submit" value="ログイン">
+            <input type="submit" class="c-btn--primary is-large" value="ログイン">
           </div>
         </form>
       </section>
