@@ -66,12 +66,18 @@ require('head.php');
             <?php //出品者のみ商品を登録できる
             if ((int)$userInfo['role'] === 2) {
             ?>
-              <li><a href="resistProduct.php" class="p-mypage__link">商品を登録する</a></li>
+              <li class="p-mypage__link"><a href="resistProduct.php">商品登録</a></li>
             <?php } ?>
-            <li><a href="profEdit.php" class="p-mypage__link">プロフィール編集</a></li>
-            <li><a href="passEdit.php" class="p-mypage__link">パスワードを変更する</a></li>
-            <li><a href="userReview.php" class="p-mypage__link">評価一覧</a></li>
-            <li><a href="#" class="p-mypage__link js-modal-trigger">退会する</a></li>
+            <li class="p-mypage__link"><a href="profEdit.php">プロフィール編集</a></li>
+            <?php //一般ユーザーのみ設定できる 
+            if ((int)$userInfo['role'] === 1) {
+            ?>
+              <li class="p-mypage__link"><a href="followCategory.php">フォロー設定</a></li>
+            <?php } ?>
+            <li class="p-mypage__link"><a href="passEdit.php">パスワード変更</a></li>
+            <li class="p-mypage__link"><a href="userReview.php">評価一覧</a></li>
+            <li class="p-mypage__link"><a href="logout.php">ログアウト</a></li>
+            <li class="p-mypage__link"><a href="#" class="js-modal-trigger">退会</a></li>
           </ul>
         </div>
         <div class="p-mypage__main">
@@ -119,9 +125,10 @@ require('head.php');
                         <a href="productDetail.php?product_id=<?php echo sanitize($val['id']); ?>" class="u-extendLink"></a>
                         <div class="c-panel__img">
                           <img src="<?php echo sanitize($val['pic1']); ?>" alt="<?php echo sanitize($val['name']); ?>">
+                          <p class="c-panel__price">¥<?php echo sanitize(number_format($val['price'])); ?></p>
                         </div>
                         <div class="c-panel__body">
-                          <p class="c-panel__title"><?php echo sanitize($val['name']); ?> <span class="c-panel__price">¥<?php echo sanitize(number_format($val['price'])); ?></span></p>
+                          <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']),0,25,'...'); ?></p>
                         </div>
                       </div>
                     <?php endforeach; ?>
@@ -144,7 +151,7 @@ require('head.php');
                         <img src="<?php echo sanitize($val['pic1']); ?>" alt="<?php echo sanitize($val['name']); ?>">
                       </div>
                       <div class="c-panel__body">
-                        <p class="c-panel__title"><?php echo sanitize($val['name']); ?></p>
+                        <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']),0,25,'...'); ?></p>
                       </div>
                     </div>
                   <?php endforeach; ?>
@@ -162,9 +169,10 @@ require('head.php');
                       <a href="productDetail.php?product_id=<?php echo sanitize($val['id']); ?>" class="u-extendLink"></a>
                       <div class="c-panel__img">
                         <img src="<?php echo sanitize($val['pic1']); ?>" alt="<?php echo sanitize($val['name']); ?>">
+                        <p class="c-panel__price">¥<?php echo sanitize(number_format($val['price'])); ?></p>
                       </div>
                       <div class="c-panel__body">
-                        <p class="c-panel__title"><?php echo sanitize($val['name']); ?> <span class="c-panel__price">¥<?php echo sanitize(number_format($val['price'])); ?></span></p>
+                        <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']),0,25,'...'); ?></p>
                       </div>
                     </div>
                   <?php endforeach; ?>
@@ -184,7 +192,7 @@ require('head.php');
                         <img src="<?php echo sanitize($val['pic1']); ?>" alt="<?php echo sanitize($val['name']); ?>">
                       </div>
                       <div class="c-panel__body">
-                        <p class="c-panel__title"><?php echo sanitize($val['name']); ?></p>
+                        <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']),0,25,'...'); ?></p>
                       </div>
                     </div>
                   <?php endforeach; ?>
@@ -196,6 +204,9 @@ require('head.php');
           </div>
         </div>
   </main>
+  <script type="text/javascript" src="js/showMessage.js"></script>
+  <script type="text/javascript" src="js/tab.js"></script>
+  <script type="text/javascript" src="js/modal.js"></script>
   <?php
   require('footer.php');
   ?>
