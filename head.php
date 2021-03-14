@@ -4,7 +4,6 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title><?php echo $siteTitle; ?> | merico</title>
-		<link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
 		<link href="css/style.css" rel="stylesheet">
 		<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
 		<script 
@@ -12,5 +11,5 @@
       integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
 	  	crossorigin="anonymous">
 		</script>
-		<script type="text/javascript" src="js/app.js"></script>
+		<script type="text/javascript" src="js/header.js"></script>
 	</head>
