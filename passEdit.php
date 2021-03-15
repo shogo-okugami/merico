@@ -47,7 +47,7 @@ if (!empty($_POST)) {
     }
 
     //新しいパスワードと古いパスワードが同じかチェック
-    if ($passOld !== $passNew) {
+    if ($passOld === $passNew) {
       $errMsg['pass_new'] = MSG13;
     }
     //パスワードとパスワード再入力が合っているかチェック
