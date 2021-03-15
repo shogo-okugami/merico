@@ -25,8 +25,11 @@ if (empty($viewData)) {
 //DBからユーザー情報を取得
 $userInfo = getUser($viewData['user_id']);
 $sellerId = (int)$userInfo['id'];
+//DBからカテゴリデータを取得
+$dbCategoryData = getCategory();
 debug('取得した商品データ：' . print_r($viewData, true));
 debug('取得したユーザーデータ：' . print_r($userInfo, true));
+debug('カテゴリデータ：' . print_r($dbCategoryData, true));
 //POST送信されていた場合
 if (!empty($_POST)) {
   debug('POST送信があります。');
@@ -51,10 +54,10 @@ if (!empty($_POST)) {
           $stmt1 = execute($dbh, $sql1, $data1);
           //クエリ成功の場合
           if ($stmt1 && $stmt2) {
-            $dbh->commit();
             $_SESSION['msg_success'] = SUC06;
-            debug('連絡掲示板へ遷移します。');
-            header("Location:bord.php?bord_id=" . $dbh->lastInsertId()); //連絡掲示板へ
+            $bord_id = $dbh->lastInsertId();
+            $dbh->commit();
+            header("Location:bord.php?bord_id=" . $bord_id); //連絡掲示板へ
           }
         } catch (Exception $e) {
           $dbh->rollBack();
@@ -118,7 +121,7 @@ require('head.php');
             <img class="js-main-img" src="<?php echo sanitize($viewData['pic1']); ?>" alt="メイン画像；<?php echo sanitize($viewData['name']); ?>">
           </div>
           <div class="p-product__images">
-            商品画像
+            <p>商品画像</p>
             <?php if (!empty($viewData['pic1'])) : ?>
               <div class="p-product__image--sub">
                 <img class="js-sub-img" src="<?php echo sanitize($viewData['pic1']); ?>" alt="画像1；<?php echo sanitize($viewData['name']) ?>">
@@ -167,7 +170,7 @@ require('head.php');
               <?php endif; ?>
             <?php endif; ?>
           </div>
-          <?php if (!$viewData['search_flg']) : ?>
+          <?php if (!$viewData['search_flg'] && $_SESSION['user_id']) : ?>
             <div class="p-product__fav">
               <i class="fas fa-heart fa-2x fav js-like <?php if (isfavorite($_SESSION['user_id'], $viewData['id'])) {
                                                           echo 'is-active';
@@ -178,15 +181,17 @@ require('head.php');
           <div class="p-product__seller">
             <a href="userDetail.php?user_id=<?php echo sanitize($sellerId); ?>" class="u-extendLink"><?php echo sanitize($userInfo['name']); ?>さんが出品しました</a>
           </div>
-          <div>
-            <p class="p-product__comment"><?php echo sanitize($viewData['comment']) ?></p>
-          </div>
         </div>
       </div>
-
-
+      <div class="p-product__comment">
+        <p class="p-product__comment__heading">商品説明</p>
+        <p class="p-product__comment__inner"><?php echo nl2br(sanitize($viewData['comment'])); ?></p>
+      </div>
     </div>
   </main>
+  <script type="text/javascript" src="js/likeInput.js"></script>
+  <script type="text/javascript" src="js/switchImg.js"></script>
+  <script type="text/javascript" src="js/modal.js"></script>
   <?php
   require('footer.php');
   ?>
