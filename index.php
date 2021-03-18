@@ -4,7 +4,7 @@
 require('function.php');
 
 debug('「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「');
-debug('「  商品検索  ');
+debug('「  商品一覧  ');
 debug('「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「「');
 debugLogStart();
 
@@ -34,15 +34,25 @@ if (!is_int((int) $currentPageNum)) {
 }
 
 //表示件数
-$listSpan = 20;
+$listSpan = 8;
 //現在の表示レコード先頭を算出
 $currentMinNum = (($currentPageNum - 1) * $listSpan); //１ページ目なら(1-1):20 = 0、２ページ目なら(2-1)*20 = 20
 //DBから商品データを取得
-$dbProductData = getProductList($currentMinNum, $category, $subCategory, $sort, $word);
+$vegetables = getProductList($currentMinNum, 1, $subCategory, $sort, $word, $listSpan);
+$fruits = getProductList($currentMinNum, 2, $subCategory, $sort, $word, $listSpan);
+//ログインしていて、一般ユーザーの場合おすすめ商品を表示
+if (isLogin()) {
+  $userInfo = getUser($_SESSION['user_id']);
+  if ((int)$userInfo['role'] === 1) {
+    $followedCategories = getFollowedCategories($_SESSION['user_id']);
+    $recomendedProducts = getProductList($currentMinNum, $category, $subCategory, $sort, $word, $listSpan, $followedCategories);
+    debug('カテゴリ' . print_r($followedCategories, true));
+  }
+}
+
 //DBからカテゴリデータを取得
 $dbCategoryData = getCategory();
-$dbSubCategoryData = getSubCategory();
-debug('カテゴリーデータ:' . print_r($dbSubCategoryData, true));
+
 $dbSortData = getSort();
 
 debug('画面表示処理終了 <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<');
@@ -65,11 +75,11 @@ require('head.php');
         ?>
           <div data-category="<?php echo $id; ?>" class="p-select-box js-list"><?php echo $val['name']; ?>
             <ul class="p-select-list js-menu">
-            <li class="p-select-option"><a href=<?php echo "index.php?category=" . $id; ?>>すべての<?php echo $val['name']; ?></a></li>
+              <li class="p-select-option"><a href=<?php echo "productIndex.php?category=" . $id; ?>>すべての<?php echo $val['name']; ?></a></li>
               <?php
-              foreach ($dbSubCategoryData[$id] as $key => $val) {
+              foreach ($dbCategoryData[$id]['sub_categories'] as $id => $val) {
               ?>
-                <li class="p-select-option"><a href=<?php echo "index.php?sub_category=" . $val['id']; ?>><?php echo $val['name']; ?></a></li>
+                <li class="p-select-option"><a href=<?php echo "productIndex.php?sub_category=" . $id; ?>><?php echo $val['name']; ?></a></li>
               <?php
               }
               ?>
@@ -80,39 +90,83 @@ require('head.php');
         ?>
       </section>
       <section class="p-index__main">
-        <div class="p-index__result">
-          <div>
-            <span><?php echo sanitize($dbProductData['total']); ?></span>件の商品が見つかりました
+        <?php
+        //おすすめ商品がある場合
+        if (isset($recomendedProducts['data'][0])) {
+        ?>
+          <h2 class="p-index__heading">Recommended</h2>
+          <div class="p-index__list">
+            <?php
+            //検索用パラメータをセット
+            $params = '';
+            foreach ($followedCategories as $key => $val) {
+              $params .= "sub_categories[{$key}]={$val}";
+              $params .= array_key_last($followedCategories) !== $key ? '&' : '';
+            }
+            foreach ($recomendedProducts['data'] as $key => $val) :
+            ?>
+              <div class="c-panel">
+                <a href="productDetail.php?product_id=<?php echo sanitize($val['id']); ?>" class="u-extendLink"></a>
+                <div class="c-panel__img">
+                  <img src="<?php echo sanitize($val['pic1']); ?>" alt="<?php echo sanitize($val['name']); ?>">
+                  <p class="c-panel__price">¥<?php echo sanitize(number_format($val['price'])); ?></p>
+                </div>
+                <div class="c-panel__body">
+                  <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']), 0, 28, '...'); ?></p>
+                </div>
+              </div>
+            <?php
+            endforeach;
+            ?>
+            <button class="p-index__btn"><a href="productIndex.php?<?php echo $params; ?>">view more</a></button>
           </div>
-          <div>
-            <span><?php echo (!empty($dbProductData['data'])) ? $currentMinNum + 1 : 0; ?></span> - <span><?php echo $currentMinNum + count($dbProductData['data']); ?></span>件 / <span><?php echo sanitize($dbProductData['total']); ?></span>件中
-          </div>
-        </div>
+        <?php } ?>
+        <h2 class="p-index__heading">Vegetables</h2>
         <div class="p-index__list">
           <?php
-          foreach ($dbProductData['data'] as $key => $val) :
+          foreach ($vegetables['data'] as $key => $val) :
           ?>
             <div class="c-panel">
               <a href="productDetail.php?product_id=<?php echo sanitize($val['id']); ?>" class="u-extendLink"></a>
               <div class="c-panel__img">
                 <img src="<?php echo sanitize($val['pic1']); ?>" alt="<?php echo sanitize($val['name']); ?>">
+                <p class="c-panel__price">¥<?php echo sanitize(number_format($val['price'])); ?></p>
               </div>
               <div class="c-panel__body">
-                <p class="c-panel__title"><?php echo sanitize($val['name']); ?></p>
-                <p class="c-panel__price">¥<?php echo sanitize(number_format($val['price'])); ?></p>
+                <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']), 0, 28, '...'); ?></p>
               </div>
             </div>
           <?php
           endforeach;
           ?>
+          <button class="p-index__btn"><a href="productIndex.php?category=1">view more</a></button>
         </div>
-
-        <?php pagination($currentPageNum, $dbProductData['total_page'], $_GET); ?>
-
+        <h2 class="p-index__heading">Fruits</h2>
+        <div class="p-index__list">
+          <?php
+          foreach ($fruits['data'] as $key => $val) :
+          ?>
+            <div class="c-panel">
+              <a href="productDetail.php?product_id=<?php echo sanitize($val['id']); ?>" class="u-extendLink"></a>
+              <div class="c-panel__img">
+                <img src="<?php echo sanitize($val['pic1']); ?>" alt="<?php echo sanitize($val['name']); ?>">
+                <p class="c-panel__price">¥<?php echo sanitize(number_format($val['price'])); ?></p>
+              </div>
+              <div class="c-panel__body">
+                <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']), 0, 28, '...'); ?></p>
+              </div>
+            </div>
+          <?php
+          endforeach;
+          ?>
+          <button class="p-index__btn"><a href="productIndex.php?category=2">view more</a></button>
+        </div>
       </section>
     </section>
   </main>
   <script type="text/javascript" src="js/categoryOption.js"></script>
+  <script type="text/javascript" src="js/sortOption.js"></script>
+  <script type="text/javascript" src="js/wordInput.js"></script>
   <?php
   require('footer.php');
   ?>
