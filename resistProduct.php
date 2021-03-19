@@ -53,6 +53,7 @@ if (!empty($_POST)) {
   //変数に商品情報を代入
   $name = $_POST['name'];
   $category = $_POST['category'];
+  $subCategory = $_POST['sub_category'];
   $price = (!empty($_POST['price'])) ? $_POST['price'] : 0; //0や空文字の場合は0を入れる。デフォルトのフォームには0が入っている。
   $comment = $_POST['comment'];
   $deleteFlags = $_POST['imgdelete'];
@@ -77,6 +78,7 @@ if (!empty($_POST)) {
     validMaxLen($name, 'name', 30);
     //セレクトボックスチェック
     validSelect($category, 'category');
+    validSelect($subCategory, 'sub_category');
     //最大文字数チェック
     validMaxLen($comment, 'comment');
     //未入力チェック
@@ -97,6 +99,10 @@ if (!empty($_POST)) {
     if ($dbFormData['category_id'] !== $category) {
       //セレクトボックスチェック
       validSelect($category, 'category');
+    }
+    if ($dbFormData['sub_category_id'] !== $subCategory) {
+      //セレクトボックスチェック
+      validSelect($subCategory, 'sub_category');
     }
     if ($dbFormData['comment'] !== $comment) {
       validRequired($comment, 'comment');
@@ -125,12 +131,12 @@ if (!empty($_POST)) {
       //編集画面の場合はUPDATE文、新規登録画面の場合はINSERT文を生成
       if ($editFlag) {
         debug('DB更新です。');
-        $sql = 'UPDATE products SET name = :name, category_id = :category, price = :price, comment = :comment, pic1 = :pic1, pic2 = :pic2, pic3 = :pic3 WHERE user_id = :user_id AND id = :product_id';
-        $data = array(':name' => $name, ':category' => $category, ':price' => $price, ':comment' => $comment, ':pic1' => $pic1, ':pic2' => $pic2, ':pic3' => $pic3, ':user_id' => $_SESSION['user_id'], ':product_id' => $productId);
+        $sql = 'UPDATE products SET name = :name, category_id = :category, sub_category_id = :sub_category, price = :price, comment = :comment, pic1 = :pic1, pic2 = :pic2, pic3 = :pic3 WHERE user_id = :user_id AND id = :product_id';
+        $data = array(':name' => $name, ':category' => $category, ':sub_category' => $subCategory, ':price' => $price, ':comment' => $comment, ':pic1' => $pic1, ':pic2' => $pic2, ':pic3' => $pic3, ':user_id' => $_SESSION['user_id'], ':product_id' => $productId);
       } else {
         debug('DB新規登録です。');
-        $sql = 'insert into products (name, category_id, price, comment, pic1, pic2, pic3, user_id, create_date ) values (:name, :category, :price, :comment, :pic1, :pic2, :pic3, :user_id, :date)';
-        $data = array(':name' => $name, ':category' => $category, ':price' => $price, ':comment' => $comment, ':pic1' => $pic1, ':pic2' => $pic2, ':pic3' => $pic3, ':user_id' => $_SESSION['user_id'], ':date' => date('Y-m-d H:i:s'));
+        $sql = 'insert into products (name, category_id, sub_category_id, price, comment, pic1, pic2, pic3, user_id, create_date ) values (:name, :category, :sub_category, :price, :comment, :pic1, :pic2, :pic3, :user_id, :date)';
+        $data = array(':name' => $name, ':category' => $category, ':sub_category' => $subCategory, ':price' => $price, ':comment' => $comment, ':pic1' => $pic1, ':pic2' => $pic2, ':pic3' => $pic3, ':user_id' => $_SESSION['user_id'], ':date' => date('Y-m-d H:i:s'));
       }
       debug('SQL；' . $sql);
       debug('流し込みデータ：' . print_r($data, true));
@@ -196,28 +202,47 @@ require('head.php');
               <div class="p-select-box js-select-form">
                 <div class="p-select-heading js-select-heading">
                   <?php
-                  if ($_POST['category']) {
-                    echo $dbCategoryData[$_POST['category'] - 1]['name'];
-                  } else if ($dbFormData && $_POST['category'] === '') {
+                  //サブカテゴリーの配列を作成
+                  $dbSubCategoryData = [];
+                  foreach( $dbCategoryData as $key => $val){
+                    $dbSubCategoryData += $val['sub_categories'];
+                  }
+                  //ポスト送信されていた場合
+                  if ($_POST['sub_category']) {
+                    echo $dbSubCategoryData[$subCategory]['name'];
+                    //編集の場合でカテゴリーが送信されていない場合
+                  } else if ($dbFormData && $_POST['sub_category'] === '') {
                     echo 'カテゴリを選択';
+                    //編集の場合の初期表示
                   } else if ($dbFormData) {
-                    echo $dbCategoryData[$dbFormData['category_id'] - 1]['name'];
+                    echo $dbSubCategoryData[$dbFormData['sub_category_id']]['name'];
                   } else {
                     echo 'カテゴリを選択';
                   }
                   ?>
                 </div>
-                <ul class="p-select-list js-select-list">
-                  <li data-category="0" class="p-select-option js-select-option js-category-option">カテゴリを選択</li>
+                <ul class="p-select-list js-category-list">
                   <?php
-                  foreach ($dbCategoryData as $key => $val) {
+                  foreach ($dbCategoryData as $id => $val) {
                   ?>
-                    <li data-category="<?php echo $val['id']; ?>" class="p-select-option js-select-option js-category-option"><?php echo $val['name']; ?></li>
+                    <li data-category="<?php echo $id; ?>" class="p-select-option js-category-option"><?php echo $val['name']; ?></li>
                   <?php
                   }
                   ?>
                 </ul>
-                <input type="hidden" name="category" value="<?php echo (!empty($category)) ? $category : $dbFormData['category_id']; ?>" class="js-selected-value">
+                <?php
+                foreach ($dbCategoryData as $id => $val) {
+                ?>
+                  <ul class="p-select-list js-subcategory-list">
+                    <?php
+                    foreach ($dbCategoryData[$id]['sub_categories'] as $id => $val) {
+                    ?>
+                      <li data-subcategory=<?php echo $id; ?> data-category="<?php echo $val['category_id']; ?>" class="p-select-option js-subcategory-option"><?php echo $val['name']; ?></li>
+                    <?php } ?>
+                  </ul>
+                <?php } ?>
+                <input type="hidden" name="category" value="<?php echo (!empty($category)) ? $category : $dbFormData['category_id']; ?>" class="js-category-value">
+                <input type="hidden" name="sub_category" value="<?php echo (!empty($subCategory)) ? $subCategory : $dbFormData['sub_category_id']; ?>" class="js-subcategory-value">
               </div>
             </label>
           </div>
@@ -261,7 +286,8 @@ require('head.php');
                     echo '0';
                   }
                   ?>
-                </span>/255文字</p>
+                </span>/255文字
+              </p>
             </label>
           </div>
           <div class="c-form__msg">
@@ -348,7 +374,9 @@ require('head.php');
       </section>
     </div>
   </main>
-  <script type="text/javascript" src="js/imageHandle.js"></script>
+  <script type="text/javascript" src="js/imageInput.js"></script>
+  <script type="text/javascript" src="js/categoryInput.js"></script>
+  <script type="text/javascript" src="js/textCount.js"></script>
   <?php
   require('footer.php');
   ?>
