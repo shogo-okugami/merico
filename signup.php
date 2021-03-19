@@ -73,8 +73,10 @@ if (!empty($_POST)) {
           //最終ログイン日時を現在日時に
           $_SESSION['login_date'] = time();
           $_SESSION['login_limit'] = $sesLimit;
-          //ユーザーIDを格納
+          //ユーザーIDとロールを格納
           $_SESSION['user_id'] = $dbh->lastInsertId();
+          $userInfo = getUser($_SESSION['user_id']);
+          $_SESSION['role'] = $userInfo['role'];
 
           debug('セッション変数の中身：' . print_r($_SESSION, true));
 
