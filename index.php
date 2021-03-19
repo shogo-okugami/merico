@@ -46,7 +46,7 @@ if (isLogin()) {
   if ((int)$userInfo['role'] === 1) {
     $followedCategories = getFollowedCategories($_SESSION['user_id']);
     $recomendedProducts = getProductList($currentMinNum, $category, $subCategory, $sort, $word, $listSpan, $followedCategories);
-    debug('カテゴリ' . print_r($followedCategories, true));
+    debug('カテゴリ' . print_r($recomendedProducts, true));
   }
 }
 
@@ -92,7 +92,7 @@ require('head.php');
       <section class="p-index__main">
         <?php
         //おすすめ商品がある場合
-        if (isset($recomendedProducts['data'][0])) {
+        if (isset($followedCategories[0])) {
         ?>
           <h2 class="p-index__heading">Recommended</h2>
           <div class="p-index__list">
