@@ -46,7 +46,7 @@ if (!empty($_POST)) {
       //DBへ接続
       $dbh = dbConnect();
       //SQL文作成
-      $sql = 'SELECT password,id FROM users WHERE email = :email AND delete_flg = 0';
+      $sql = 'SELECT password,id,role FROM users WHERE email = :email AND delete_flg = 0';
       $data = array(':email' => $email);
       //クエリ実行
       $stmt = execute($dbh, $sql, $data);
@@ -76,6 +76,7 @@ if (!empty($_POST)) {
         }
         //ユーザーIDを格納
         $_SESSION['user_id'] = $result['id'];
+        $_SESSION['role'] = $result['role'];
         debug('セッション変数の中身：' . print_r($_SESSION, true));
         if ($_SESSION['link']) {
           $link = getSessionFlash('link');
