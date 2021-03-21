@@ -27,7 +27,7 @@ $subCategory = (!empty($_GET['sub_category'])) ? $_GET['sub_category'] : 0;
 $sort = (!empty($_GET['sort'])) ? $_GET['sort'] : 0;
 //検索ワード
 $word = (!empty($_GET['word'])) ? $_GET['word'] : '';
-$followedCategories = (!isset($_GET['sub_categories'][0])) ? $_GET['sub_categories'] : null;
+$followedCategories = isset($_GET['sub_categories'][0]) ? $_GET['sub_categories'] : null;
 //パラメータに不正な値が入っているかチェック
 if (!is_int((int) $currentPageNum)) {
   error_log('エラー発生:指定ページに不正な値が入りました');
