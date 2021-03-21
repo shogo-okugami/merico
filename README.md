@@ -15,4 +15,12 @@ http://merico.hacca.jp/
 * email:sample01@gmail.com パスワード:sample1234(一般ユーザー)  
 * email:sample02@gmail.com パスワード:sample5678(生産者)
 ## アプリ機能
+* ログイン
+* ユーザー登録
+* 商品登録
+* プロフィール編集
+* 連絡メッセージ
+* お気に入り登録
+* ユーザー評価
+* カテゴリーフォロー
 
