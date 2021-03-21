@@ -1,5 +1,5 @@
 # merico
-![merico](https://user-images.githubusercontent.com/50671204/111923631-703a2480-8ae3-11eb-8627-c16070fcb655.png))
+![merico](https://user-images.githubusercontent.com/50671204/111923631-703a2480-8ae3-11eb-8627-c16070fcb655.png)
 ## 概要
 規格外の農作物を生産者と消費者が直接取引できるサービスです。  
 アプリ名はmerico(メリコ)です。  
