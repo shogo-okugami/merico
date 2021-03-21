@@ -73,7 +73,7 @@ define('MSG16', '不正なアクセスです');
 define('MSG17', '半角数字のみご利用いただけます。');
 define('MSG18', '取引中の商品があるため退会できません。取引を完了してください。');
 define('SUC01', 'パスワードを変更しました。');
-define('SUC02', 'プロフィを変更しました。');
+define('SUC02', 'プロフィールを変更しました。');
 define('SUC03', '取引が完了しました。ご利用ありがとうございます。');
 define('SUC04', '商品を登録しました。');
 define('SUC06', '購入しました。相手と連絡を取りましょう。');
@@ -477,7 +477,7 @@ function getProduct(int $userId, int $productId)
  * 
  * @return array
  */
-function getProductList($currentMinNum = 1, int $category, int $subCategory , int $sort, string $word, int $span = 20)
+function getProductList($currentMinNum = 1, int $category, int $subCategory, int $sort, string $word, int $span = 20, array $followedCategories = null)
 {
   debug('商品情報を取得します。');
 
@@ -487,15 +487,19 @@ function getProductList($currentMinNum = 1, int $category, int $subCategory , in
     //件数用のSQL文作成
     $sql = 'SELECT * FROM products WHERE search_flg = 0 AND delete_flg = 0';
     $where = array();
+    $order = '';
     $data = array();
+    //カテゴリーが指定されている場合
     if (!empty($category)) {
       array_push($where, "category_id = :category_id");
       $data += array(':category_id' => $category);
     }
-    if(!empty($subCategory)) {
+    //サブカテゴリーが指定されている場合
+    if (!empty($subCategory)) {
       array_push($where, "sub_category_id = :sub_category_id");
       $data += array(':sub_category_id' => $subCategory);
     }
+    //ソートが指定されている場合
     if (!empty($sort)) {
       switch ($sort) {
         case 1:
@@ -506,11 +510,23 @@ function getProductList($currentMinNum = 1, int $category, int $subCategory , in
           break;
       }
     }
+    //検索ワードが指定されている場合
     if (!empty($word)) {
       $word = '%' . preg_replace('/(?=[!_%])/', '!', $word) . '%';
       array_push($where, "name LIKE :word");
       $data += array(':word' => $word);
     }
+    //おすすめ商品を取得する場合
+    if (isset($followedCategories[0])) {
+      //IN句でフォロー中のカテゴリに属する商品を検索する
+      $in = 'sub_category_id IN (';
+      foreach ($followedCategories as $key => $val) {
+        $in .= array_key_last($followedCategories) !== $key ? '?, ' : '? )';
+        array_push($data,$val);
+      }
+      array_push($where, $in);
+    }
+    //WHERE文がある場合
     if (!empty($where)) {
       $whereSql = implode(' AND ', $where);
       $sql .= ' AND ' . $whereSql;
@@ -562,8 +578,8 @@ function showProduct(int $productId)
     //DBへ接続
     $dbh = dbConnect();
     //SQL文作成
-    $sql = 'SELECT p.id, p.name, p.comment, p.pic1, p.pic2, p.pic3, p.price, p.category_id, p.user_id, p.search_flg, p.create_date, c.name AS category 
-            FROM products AS p LEFT JOIN category AS c ON p.category_id = c.id WHERE p.id = :product_id AND p.delete_flg = 0';
+    $sql = 'SELECT p.id, p.name, p.comment, p.pic1, p.pic2, p.pic3, p.price, p.category_id, p.user_id, p.search_flg, p.create_date, s.name AS category 
+            FROM products AS p LEFT JOIN sub_categories AS s ON p.sub_category_id = s.id WHERE p.id = :product_id AND p.delete_flg = 0';
     $data = array(':product_id' => $productId);
     //クエリ実行
     $stmt = execute($dbh, $sql, $data);
@@ -802,14 +818,21 @@ function getCategory()
     //DBへ接続
     $dbh = dbConnect();
     //SQL文作成
-    $sql = 'SELECT * FROM category';
+    $sql = 'SELECT id,id,name FROM category';
     $data = array();
     //クエリ実行
     $stmt = execute($dbh, $sql, $data);
 
+    //クエリ結果の全データを返却
+    $result = $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_UNIQUE);
+    foreach ($result as $key => $val) {
+      $sql = 'SELECT id, id, name, category_id FROM sub_categories WHERE category_id = :category';
+      $data = array(':category' => $key);
+      $subCategory = execute($dbh, $sql, $data);
+      $result[$key]['sub_categories'] = $subCategory->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_UNIQUE);
+    }
     if ($stmt) {
-      //クエリ結果の全データを返却
-      return $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_UNIQUE);
+      return $result;
     } else {
       return false;
     }
@@ -830,14 +853,43 @@ function getSubCategory()
     //DBへ接続
     $dbh = dbConnect();
     //SQL文作成
-    $sql = 'SELECT category_id, id, name FROM sub_categories';
+    $sql = 'SELECT id,name,category_id FROM sub_categories';
     $data = array();
     //クエリ実行
     $stmt = execute($dbh, $sql, $data);
 
     if ($stmt) {
       //クエリ結果の全データを返却
-      return $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_GROUP);
+      return $stmt->fetchAll(PDO::FETCH_ASSOC | PDO::FETCH_UNIQUE);
+    } else {
+      return false;
+    }
+  } catch (PDOException $e) {
+    error_log('エラー発生：' . $e->getMessage());
+    $errMsg['common'] = MSG07;
+  }
+}
+/**
+ * ユーザーにフォローされているカテゴリーを取得します
+ * 
+ * @param int userId
+ * 
+ * @return array
+ */
+function getFollowedCategories(int $userId)
+{
+  try {
+    //DBへ接続
+    $dbh = dbConnect();
+    //SQL文作成
+    $sql = 'SELECT sub_category_id FROM category_follows WHERE user_id = :user_id';
+    $data = array(':user_id' => $userId);
+    //クエリ実行
+    $stmt = execute($dbh, $sql, $data);
+
+    if ($stmt) {
+      //クエリ結果の全データを返却
+      return $stmt->fetchAll(PDO::FETCH_COLUMN);
     } else {
       return false;
     }
@@ -951,7 +1003,7 @@ function getMyLike(int $userId)
  * 
  * @return mixed
  */
-function sanitize(string $str)
+function sanitize(?string $str)
 {
   return htmlspecialchars($str, ENT_QUOTES);
 }
@@ -963,7 +1015,7 @@ function sanitize(string $str)
  * 
  * @return mixed
  */
-function getFormData(string $str, bool $flag = false)
+function getFormData(?string $str, bool $flag = false)
 {
   $method = $flag ? $_GET : $_POST;
   global $dbFormData;
@@ -1079,7 +1131,7 @@ function pagination($currentPageNum, $totalPageNum, $param = '', $pageColNum = 5
     $minPageNum = $currentPageNum;
     $maxPageNum = 5;
     //総ページ数が表示項目数より少ない場合は、総ページ数をループのMAX、ループのMinを１に設定
-  } elseif ($totalPageNum < $pageColNum) {
+  } elseif ($totalPageNum <= $pageColNum) {
     $minPageNum = 1;
     $maxPageNum = $totalPageNum;
     //それ以外は左に２個表示。
@@ -1122,7 +1174,7 @@ function pagination($currentPageNum, $totalPageNum, $param = '', $pageColNum = 5
  * 
  * @return string
  */
-function showProfImg(string $path)
+function showProfImg(?string $path)
 {
   if (!empty($path)) {
     return sanitize($path);
@@ -1186,16 +1238,3 @@ function checkToken()
   }
   $_SESSION['token'] = $token;
 }
-
-/*
-   <div class="p-select-heading js-select-heading"><?php echo $sort ? $dbSortData[$sort - 1]['name'] : '表示順を選択'; ?></div>
-          <ul class="p-select-list js-select-list">
-            <li data-category="0" class="p-select-option js-select-option js-sort-option">表示順を選択</li>
-            <?php
-            foreach ($dbSortData as $key => $val) {
-            ?>
-              <li data-sort="<?php echo $val['id']; ?>" class="p-select-option js-select-option js-sort-option"><?php echo $val['name']; ?></li>
-            <?php
-            }
-            ?>
-          </ul>*/
