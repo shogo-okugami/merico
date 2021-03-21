@@ -23,12 +23,12 @@ if (empty($viewData)) {
   header("Location:index.php"); //トップページへ
 }
 //DBからユーザー情報を取得
-$userInfo = getUser($viewData['user_id']);
-$sellerId = (int)$userInfo['id'];
+$sellerInfo = getUser($viewData['user_id']);
+$sellerId = (int)$sellerInfo['id'];
 //DBからカテゴリデータを取得
 $dbCategoryData = getCategory();
 debug('取得した商品データ：' . print_r($viewData, true));
-debug('取得したユーザーデータ：' . print_r($userInfo, true));
+debug('取得したユーザーデータ：' . print_r($sellerInfo, true));
 debug('カテゴリデータ：' . print_r($dbCategoryData, true));
 //POST送信されていた場合
 if (!empty($_POST)) {
@@ -162,7 +162,7 @@ require('head.php');
           </div>
 
           <div>
-            <?php if ($_SESSION['user_id'] !== $viewData['user_id']) : ?>
+            <?php if ($_SESSION['user_id'] !== $viewData['user_id'] && (int)$_SESSION['role'] === 1) : ?>
               <?php if (!$viewData['search_flg']) : ?>
                 <form action="" method="post">
                   <input type="submit" class="c-btn--submit c-btn--primary" value="購入する" name="submit">
@@ -179,7 +179,7 @@ require('head.php');
             </div>
           <?php endif; ?>
           <div class="p-product__seller">
-            <a href="userDetail.php?user_id=<?php echo sanitize($sellerId); ?>" class="u-extendLink"><?php echo sanitize($userInfo['name']); ?>さんが出品しました</a>
+            <a href="userDetail.php?user_id=<?php echo sanitize($sellerId); ?>" class="u-extendLink"><?php echo sanitize($sellerInfo['name']); ?>さんが出品しました</a>
           </div>
         </div>
       </div>
