@@ -25,9 +25,6 @@ $dbFormData = (!empty($productId)) ? getProduct($_SESSION['user_id'], $productId
 $editFlag = (empty($dbFormData)) ? false : true;
 //DBからカテゴリデータを取得
 $dbCategoryData = getCategory();
-debug('商品ID：' . $productId);
-debug('フォーム用DBデータ：' . print_r($dbFormData, true));
-debug('カテゴリデータ：' . print_r($dbCategoryData, true));
 
 // パラメータ改ざんチェック
 //================================
@@ -146,7 +143,6 @@ if (!empty($_POST)) {
       //クエリ成功の場合
       if ($stmt) {
         $_SESSION['msg_success'] = SUC04;
-        unset($_SESSION['token']);
         debug('マイページへ遷移します。');
         header("Location:mypage.php");
       } else {

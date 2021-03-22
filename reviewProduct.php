@@ -69,7 +69,6 @@ if (!empty($_POST)) {
               $stmt2 = execute($dbh, $sql2, $data2);
               if ($stmt1 && $stmt2) {
                 $dbh->commit();
-                unset($_SESSION['token']);
                 $_SESSION['msg_success'] = SUC03;
                 header("Location:mypage.php");
               }
@@ -88,7 +87,6 @@ if (!empty($_POST)) {
               $stmt2 = execute($dbh, $sql2, $data2);
               if ($stmt1 && $stmt2) {
                 $dbh->commit();
-                unset($_SESSION['token']);
                 $_SESSION['msg_success'] = SUC03;
                 header("Location:mypage.php");
               }
@@ -117,7 +115,6 @@ if (!empty($_POST)) {
               $stmt2 = execute($dbh, $sql2, $data2);
               if ($stmt1 && $stmt2) {
                 $dbh->commit();
-                unset($_SESSION['token']);
                 $_SESSION['msg_success'] = SUC03;
                 header("Location:mypage.php");
               }
@@ -137,7 +134,6 @@ if (!empty($_POST)) {
               $stmt2 = execute($dbh, $sql2, $data2);
               if ($stmt1 && $stmt2) {
                 $dbh->commit();
-                unset($_SESSION['token']);
                 $_SESSION['msg_success'] = SUC03;
                 header("Location:mypage.php");
               }
