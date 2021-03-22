@@ -18,10 +18,16 @@ require('auth.php');
 $userData = getUser($_SESSION['user_id']);
 debug('取得したユーザー情報：' . print_r($userData, true));
 
+//トークンを格納
+setToken();
+
 //post送信されていた場合
 if (!empty($_POST)) {
   debug('POST送信があります。');
   debug('POST情報：' . print_r($_POST, true));
+
+  //トークン判定
+  checkToken();
 
   //変数にユーザー情報を代入
   $passOld = $_POST['pass_old'];
@@ -92,6 +98,7 @@ require('head.php');
     <div class="u-bgColor--gray">
       <section class="c-container">
         <form action="" method="POST" class="c-form" autocomplete="off">
+        <input type="hidden" name="token" value="<?php echo $token; ?>">
           <div class="c-form__msg">
             <?php
             echo getErrMsg('common');
