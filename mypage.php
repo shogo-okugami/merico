@@ -12,8 +12,8 @@ debugLogStart();
 //================================
 //ログイン認証
 require('auth.php');
-//トークンを破棄
-unSetToken();
+//トークンを格納
+setToken();
 // 画面表示用データ取得
 //================================
 $userId = $_SESSION['user_id'];
@@ -48,16 +48,17 @@ require('head.php');
   </p>
 
   <div class="c-modal js-modal">
-    <div class="c-modal__inner">
+    <form action="withdraw.php" method="post" class="c-modal__inner">
+    <input type="hidden" name="token" value="<?php echo $token; ?>">
       <p class="c-modal__text">
         退会するとすべてのアカウント情報が削除されます。<br>
         本当に退会しますか？
       </p>
       <div class="c-modal__btn">
-        <a class="c-btn--warning" href="withdraw.php">はい</a>
+        <input type="submit" value="はい" class="c-btn--warning">
         <a class="c-btn--cancel js-modal-trigger">いいえ</a>
       </div>
-    </div>
+    </form>
   </div>
   <main>
     <div class="u-bgColor--gray">
@@ -129,7 +130,7 @@ require('head.php');
                           <p class="c-panel__price">¥<?php echo sanitize(number_format($val['price'])); ?></p>
                         </div>
                         <div class="c-panel__body">
-                          <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']),0,25,'...'); ?></p>
+                          <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']), 0, 25, '...'); ?></p>
                         </div>
                       </div>
                     <?php endforeach; ?>
@@ -152,7 +153,7 @@ require('head.php');
                         <img src="<?php echo sanitize($val['pic1']); ?>" alt="<?php echo sanitize($val['name']); ?>">
                       </div>
                       <div class="c-panel__body">
-                        <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']),0,25,'...'); ?></p>
+                        <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']), 0, 25, '...'); ?></p>
                       </div>
                     </div>
                   <?php endforeach; ?>
@@ -173,7 +174,7 @@ require('head.php');
                         <p class="c-panel__price">¥<?php echo sanitize(number_format($val['price'])); ?></p>
                       </div>
                       <div class="c-panel__body">
-                        <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']),0,25,'...'); ?></p>
+                        <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']), 0, 25, '...'); ?></p>
                       </div>
                     </div>
                   <?php endforeach; ?>
@@ -193,7 +194,7 @@ require('head.php');
                         <img src="<?php echo sanitize($val['pic1']); ?>" alt="<?php echo sanitize($val['name']); ?>">
                       </div>
                       <div class="c-panel__body">
-                        <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']),0,25,'...'); ?></p>
+                        <p class="c-panel__title"><?php echo mb_strimwidth(sanitize($val['name']), 0, 25, '...'); ?></p>
                       </div>
                     </div>
                   <?php endforeach; ?>
