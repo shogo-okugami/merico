@@ -522,7 +522,7 @@ function getProductList($currentMinNum = 1, int $category, int $subCategory, int
       $in = 'sub_category_id IN (';
       foreach ($followedCategories as $key => $val) {
         $in .= array_key_last($followedCategories) !== $key ? '?, ' : '? )';
-        array_push($data,$val);
+        array_push($data, $val);
       }
       array_push($where, $in);
     }
@@ -1225,7 +1225,7 @@ function setToken()
 }
 /**
  * トークン判定関数
- * 
+ *
  * POSTとSESSIONのトークンがない場合、または一致しない場合エラーメッセージを格納します
  * SESSIONにsetToken関数で生成したトークンを格納します
  */
@@ -1237,4 +1237,11 @@ function checkToken()
     $errMsg['common'] = MSG16;
   }
   $_SESSION['token'] = $token;
+}
+/**
+ * トークン破棄関数
+ */
+function unSetToken()
+{
+  if (isset($_SESSION['token'])) unset($_SESSION['token']);
 }
