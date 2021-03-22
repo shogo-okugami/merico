@@ -37,7 +37,7 @@ if (!empty($_POST)) {
   debug('POST送信があります。');
 
   //ログイン済みの場合購入できる
-  if (isLogin()) {
+  if (isLogin() && $_SESSION['user_id'] !== $viewData['user_id'] && (int)$_SESSION['role'] === 1) {
 
     //トークン判定
     checkToken();
@@ -169,13 +169,11 @@ require('head.php');
           </div>
 
           <div>
-            <?php if ($_SESSION['user_id'] !== $viewData['user_id'] && (int)$_SESSION['role'] === 1) : ?>
-              <?php if (!$viewData['search_flg']) : ?>
-                <form action="" method="post">
-                  <input type="hidden" name="token" value="<?php echo $token; ?>">
-                  <input type="submit" class="c-btn--submit c-btn--primary" value="購入する" name="submit">
-                </form>
-              <?php endif; ?>
+            <?php if (!$viewData['search_flg'] && (int)$_SESSION['role'] === 1) : ?>
+              <form action="" method="post">
+                <input type="hidden" name="token" value="<?php echo $token; ?>">
+                <input type="submit" class="c-btn--submit c-btn--primary" value="購入する" name="submit">
+              </form>
             <?php endif; ?>
           </div>
           <?php if (!$viewData['search_flg'] && $_SESSION['user_id']) : ?>
