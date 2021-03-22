@@ -76,7 +76,6 @@ if (!empty($_POST)) {
       //クエリ成功の場合
       if ($stmt) {
         $_SESSION['msg_success'] = SUC02;
-        unset($_SESSION['token']);
         debug('マイページへ遷移します。');
         header("Location:mypage.php");
       } else {
