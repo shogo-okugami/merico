@@ -1241,7 +1241,7 @@ function checkToken()
 /**
  * トークン破棄関数
  */
-function unSetToken()
+function unsetToken()
 {
   if (isset($_SESSION['token'])) unset($_SESSION['token']);
 }
