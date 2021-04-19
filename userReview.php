@@ -13,7 +13,7 @@ debugLogStart();
 //ログイン認証
 require('auth.php');
 //トークンを破棄
-unSetToken();
+unsetToken();
 // 画面表示用データ取得
 //================================
 $userId = $_SESSION['user_id'];
