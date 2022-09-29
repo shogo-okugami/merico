@@ -10,7 +10,7 @@
 * scss
 * Mysql
 ## URL
-http://merico.hacca.jp/  
+http://merico.conohawing.com  
 以下のメールアドレスとパスワードでログインできます。 
 * email:sample01@example.com パスワード:sample1234(一般ユーザー)  
 * email:sample02@example.com パスワード:sample5678(生産者)
